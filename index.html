@@ -63,7 +63,7 @@
              height: 10rem; /* 160px */
              border-radius: 1.25rem;
              margin-bottom: 1.5rem;
-             object-fit: cover; /* Mantenemos 'cover' aquí para la vista de galería */
+             object-fit: cover; 
              background-color: rgba(255, 255, 0.2);
              transition: transform 0.3s ease-in-out; 
              pointer-events: none; 
@@ -136,13 +136,15 @@
             background-color: #1F2937;
             color: #E5E7EB;
             margin: auto;
-            padding: 2rem;
+            /* --- CAMBIO AQUÍ (Eliminamos padding general) --- */
+            padding: 0; 
             border: 1px solid rgba(255, 255, 255, 0.1);
             width: 90%;
             max-width: 500px;
             border-radius: 1rem;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
             position: relative;
+            overflow: hidden; /* Para el borde redondeado */
         }
         #details-modal .modal-content {
              max-width: 600px; 
@@ -157,7 +159,7 @@
             font-weight: bold;
             cursor: pointer;
             line-height: 1;
-            z-index: 10; /* Asegura que esté sobre la imagen */
+            z-index: 10; 
         }
         .modal-close:hover,
         .modal-close:focus {
@@ -166,23 +168,31 @@
         }
         
         /* Estilos para Modal de Detalles */
-        #details-modal .modal-content {
-            padding: 0; 
-            overflow: hidden; 
-        }
         
         /* --- CAMBIO AQUÍ (Ajuste de Icono Principal) --- */
         #details-icono {
-            width: 100%;
-            height: 250px;
-            object-fit: contain; /* <-- ESTE ES EL ARREGLO */
-            background-color: rgba(0, 0, 0, 0.2); /* <-- Fondo para 'contain' */
+            width: 12rem; /* 192px */
+            height: 12rem; /* 192px */
+            border-radius: 1.5rem; /* Bordes redondeados */
+            object-fit: cover; /* Para llenar el espacio */
+            background-color: rgba(255, 255, 255, 0.2); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            margin-bottom: 1.5rem; /* Espacio debajo */
         }
         /* --- FIN DEL CAMBIO --- */
         
         #details-contenido {
             padding: 2rem;
+            text-align: center; /* Centramos todo el contenido */
         }
+        /* --- CAMBIO AQUÍ (Centramos el ícono) --- */
+        .details-icono-wrapper {
+            display: flex;
+            justify-content: center;
+            /* El padding top se lo da el details-contenido */
+        }
+        /* --- FIN DEL CAMBIO --- */
+        
         #details-nombre {
             font-size: 1.75rem;
             font-weight: 700;
@@ -199,6 +209,7 @@
         #details-screenshots-container {
             display: none; 
             padding: 0 2rem 2rem 2rem; 
+            text-align: left; /* Devolvemos el texto a la izquierda */
         }
         #details-screenshots-container h3 {
             font-size: 1.25rem;
@@ -214,16 +225,29 @@
             scroll-snap-type: x mandatory;
         }
         
-        /* --- CAMBIO AQUÍ (Ajuste de Capturas) --- */
         .screenshots-gallery img {
-            height: 220px; /* <-- Altura Fija */
-            width: auto;   /* <-- Ancho Automático */
+            height: 220px; 
+            width: auto;   
             flex-shrink: 0; 
             border-radius: 0.5rem;
-            object-fit: contain; /* <-- ESTE ES EL ARREGLO */
+            object-fit: contain; 
             border: 1px solid rgba(255, 255, 255, 0.2);
             scroll-snap-align: center; 
-            background-color: rgba(0, 0, 0, 0.2); /* <-- Fondo para 'contain' */
+            background-color: rgba(0, 0, 0, 0.2); 
+        }
+        
+        /* --- CAMBIO AQUÍ (Estilo para Checkbox PWA) --- */
+        .form-checkbox {
+            height: 1rem;
+            width: 1rem;
+            border-radius: 0.25rem;
+            background-color: #374151;
+            border: 1px solid #4B5563;
+            cursor: pointer;
+        }
+        .form-checkbox:checked {
+            background-color: #3B82F6;
+            border-color: #3B82F6;
         }
         /* --- FIN DEL CAMBIO --- */
         
@@ -262,6 +286,12 @@
         .btn-primary {
             background-color: #3B82F6;
             color: white;
+            /* --- CAMBIO AQUÍ (Añadimos flex para el icono) --- */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem; /* Espacio entre icono y texto */
+            /* --- FIN DEL CAMBIO --- */
         }
         .btn-primary:hover {
             background-color: #2563EB;
@@ -355,6 +385,12 @@
             cursor: not-allowed;
             transform: none;
         }
+        
+        /* Contenido del modal de admin (con padding) */
+        .admin-modal-content {
+             padding: 2rem;
+        }
+
     </style>
 </head>
 <body class="min-h-screen">
@@ -388,7 +424,7 @@
 
     <!-- Modal de Login -->
     <div id="login-modal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content admin-modal-content"> <!-- Añadido padding aquí -->
             <span class="modal-close" id="login-close">&times;</span>
             <h2 class="text-2xl font-bold mb-6 text-center text-white">Iniciar Sesión</h2>
             <form id="login-form">
@@ -408,7 +444,7 @@
 
     <!-- Modal de Administración de Apps -->
     <div id="admin-modal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content admin-modal-content"> <!-- Añadido padding aquí -->
             <span class="modal-close" id="admin-close">&times;</span>
             <h2 class="text-2xl font-bold mb-6 text-white">Administración de Apps</h2>
             
@@ -440,6 +476,13 @@
                     <input type="text" id="app-screenshots" class="form-input" placeholder="https://.../img1.png, https://.../img2.png">
                 </div>
 
+                <!-- --- CAMBIO AQUÍ (Checkbox PWA) --- -->
+                <div class="flex items-center pt-2">
+                    <input type="checkbox" id="app-is-pwa" class="form-checkbox">
+                    <label for="app-is-pwa" class="ml-2 text-sm form-label">Es una PWA (App Instalable)</label>
+                </div>
+                <!-- --- FIN DEL CAMBIO --- -->
+
                 <button type="submit" id="admin-form-submit" class="btn btn-primary !mt-6">Guardar App</button>
                 <button type="button" id="admin-form-cancel" class="btn btn-secondary w-full" style="display: none;">Cancelar Edición</button>
             </form>
@@ -460,17 +503,24 @@
         <div class="modal-content">
             <span class="modal-close" id="details-close">&times;</span>
             
-            <!-- Icono -->
-            <img id="details-icono" src="" alt="Icono de la App">
-            
             <!-- Contenido Principal -->
             <div id="details-contenido">
+                
+                <!-- --- CAMBIO AQUÍ (Wrapper para centrar el icono) --- -->
+                <div class="details-icono-wrapper">
+                    <img id="details-icono" src="" alt="Icono de la App">
+                </div>
+                <!-- --- FIN DEL CAMBIO --- -->
+
                 <h2 id="details-nombre" class="text-3xl font-bold mb-2 text-white">Nombre de la App</h2>
                 <p id="details-desc" class="text-lg text-gray-300 mb-6">Descripción completa de la aplicación...</p>
                 
+                <!-- --- CAMBIO AQUÍ (Botón con span para texto) --- -->
                 <a id="details-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
-                    Ir a la Aplicación
+                    <!-- El SVG se insertará aquí con JS -->
+                    <span id="details-link-text">Ir a la Aplicación</span>
                 </a>
+                <!-- --- FIN DEL CAMBIO --- -->
             </div>
             
             <!-- Galería de Capturas -->
@@ -548,6 +598,7 @@
         const appDescInput = document.getElementById("app-desc");
         const appLinkInput = document.getElementById("app-link");
         const appScreenshotsInput = document.getElementById("app-screenshots"); 
+        const appIsPWAInput = document.getElementById("app-is-pwa"); // <-- Nuevo
         const adminFormSubmitBtn = document.getElementById("admin-form-submit");
         const adminFormCancelBtn = document.getElementById("admin-form-cancel");
         
@@ -592,11 +643,38 @@
                 
                 document.getElementById("details-icono").src = card.dataset.icono;
                 document.getElementById("details-icono").onerror = () => {
-                     document.getElementById("details-icono").src = `https://placehold.co/600x250/FFFFFF/333333?text=${card.dataset.nombre}`
+                     document.getElementById("details-icono").src = `https://placehold.co/192x192/FFFFFF/333333?text=${card.dataset.nombre}`
                 };
                 document.getElementById("details-nombre").textContent = card.dataset.nombre;
                 document.getElementById("details-desc").textContent = card.dataset.desc;
-                document.getElementById("details-link").href = card.dataset.link;
+                
+                // --- CAMBIO AQUÍ (Lógica del botón PWA) ---
+                const isPWA = card.dataset.ispwa === 'true';
+                const button = document.getElementById("details-link");
+                const buttonText = document.getElementById("details-link-text");
+                const oldIcon = button.querySelector('svg');
+                if (oldIcon) oldIcon.remove(); // Limpiar icono anterior
+
+                button.href = card.dataset.link; // Asignar el link
+
+                if (isPWA) {
+                    buttonText.textContent = "Instalar Aplicación";
+                    // Icono de Descarga
+                    button.insertAdjacentHTML('afterbegin', `
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                    `);
+                } else {
+                    buttonText.textContent = "Ir a la Aplicación";
+                    // Icono de Enlace Externo
+                    button.insertAdjacentHTML('afterbegin', `
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                        </svg>
+                    `);
+                }
+                // --- FIN DEL CAMBIO ---
                 
                 const screenshotsContainer = document.getElementById("details-screenshots-container");
                 const gallery = document.getElementById("details-screenshots-gallery");
@@ -697,7 +775,8 @@
                     icono: appIconoInput.value,
                     descripcion: appDescInput.value,
                     link: appLinkInput.value,
-                    screenshots: screenshotsArray 
+                    screenshots: screenshotsArray, 
+                    isPWA: appIsPWAInput.checked // <-- Nuevo
                 };
             } else {
                 // Creando
@@ -708,7 +787,8 @@
                     link: appLinkInput.value,
                     creadoEn: serverTimestamp(),
                     orden: currentAppCount,
-                    screenshots: screenshotsArray 
+                    screenshots: screenshotsArray,
+                    isPWA: appIsPWAInput.checked // <-- Nuevo
                 };
             }
             
@@ -762,7 +842,7 @@
             loadingAppsMsg.style.display = "block";
         });
 
-        // Renderizar Card (con data-screenshots)
+        // Renderizar Card (con data-ispwa)
         function renderAppCard(app, id, index) { 
             const card = document.createElement("div"); 
             card.className = "app-card";
@@ -773,6 +853,7 @@
             card.setAttribute("data-desc", app.descripcion);
             card.setAttribute("data-link", app.link);
             card.setAttribute("data-screenshots", JSON.stringify(app.screenshots || []));
+            card.setAttribute("data-ispwa", app.isPWA || false); // <-- Nuevo
             
             card.classList.add("card-fade-in");
             card.style.animationDelay = `${index * 80}ms`;
@@ -787,7 +868,7 @@
             appGallery.appendChild(card);
         }
 
-        // Renderizar item en lista de admin (con data-screenshots)
+        // Renderizar item en lista de admin (con data-ispwa)
         function renderAdminListItem(app, id) {
             const item = document.createElement("div");
             item.className = "admin-list-item";
@@ -797,6 +878,7 @@
             item.setAttribute("data-desc", app.descripcion);
             item.setAttribute("data-link", app.link);
             item.setAttribute("data-screenshots", JSON.stringify(app.screenshots || []));
+            item.setAttribute("data-ispwa", app.isPWA || false); // <-- Nuevo
             
             item.innerHTML = `
                 <span>${app.nombre}</span>
@@ -823,6 +905,7 @@
                 appLinkInput.value = item.getAttribute("data-link");
                 const screenshots = JSON.parse(item.getAttribute("data-screenshots") || '[]');
                 appScreenshotsInput.value = screenshots.join(', '); 
+                appIsPWAInput.checked = item.getAttribute("data-ispwa") === 'true'; // <-- Nuevo
                 
                 adminFormSubmitBtn.textContent = "Actualizar App";
                 adminFormCancelBtn.style.display = "block";
@@ -931,14 +1014,14 @@
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
         async function fetchWithRetry(url, options, retries = 3, backoff = 1000) {
-            let lastResponse = null; // Guardar la última respuesta
+            let lastResponse = null; 
             for (let i = 0; i < retries; i++) {
                 try {
                     const response = await fetch(url, options);
-                    lastResponse = await response.json(); // Intentar parsear JSON
+                    lastResponse = await response.json(); 
                     
                     if (response.ok) {
-                        return lastResponse; // Éxito
+                        return lastResponse; 
                     }
                     console.warn(`Intento ${i + 1} fallido (Respuesta no OK): ${response.statusText}`, lastResponse);
                 } catch (error) {
@@ -947,7 +1030,6 @@
                 await delay(backoff);
                 backoff *= 2; 
             }
-            // Si todos los reintentos fallan
             console.error("Fallaron todos los intentos de fetch. Última respuesta recibida:", lastResponse);
             throw new Error("No se pudo obtener respuesta de la API después de varios intentos.");
         }
@@ -978,7 +1060,6 @@
                 throw new Error("Error de red al contactar la API de Gemini.");
             }
 
-            // Logueamos la respuesta completa SIEMPRE para depurar
             console.log("Respuesta completa de Gemini API:", JSON.stringify(result, null, 2));
 
             const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
