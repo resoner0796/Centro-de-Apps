@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corning Apps</title>
+    
+    <!-- Cargamos Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* Estilos personalizados (fondo, fuente de título, modales) */
+        body {
+            /* Fondo azul ejecutivo con desvanecido a negro */
+            background: linear-gradient(to bottom, #002244, #000000);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #E5E7EB; /* Texto gris claro por defecto */
+            min-height: 100vh;
+        }
+
+        .titulo-principal {
+            /* Fuente New Times Roman, normal, grande y llamativa */
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: 400; /* 400 es 'normal' */
+            cursor: pointer; /* Indica que se puede hacer clic */
+            user-select: none; /* Evita que el texto se seleccione */
+            display: inline-block; /* Para que el cursor solo aplique al texto */
+        }
+
+        /* Estilos para las tarjetas de apps */
+        .app-card {
+            background: rgba(255, 255, 255, 0.05); /* Un poco más sutil */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            height: 100%; /* Para que todas las tarjetas tengan la misma altura */
+        }
+        .app-card:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .app-card img {
+             width: 6rem; /* 96px */
+             height: 6rem; /* 96px */
+             border-radius: 0.75rem; /* rounded-xl */
+             margin-bottom: 1rem;
+             object-fit: cover;
+             background-color: rgba(255, 255, 255, 0.2);
+        }
+        .app-card-nombre {
+            font-size: 1.125rem; /* text-lg */
+            font-weight: 600; /* semibold */
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+        .app-card-desc {
+            font-size: 0.875rem; /* text-sm */
+            color: #D1D5DB; /* gray-300 */
+            flex-grow: 1; /* Empuja el link al fondo si es necesario */
+        }
+        
+        /* Estilos para los Modales */
+        .modal {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #1F2937; /* Gris oscuro */
+            color: #E5E7EB;
+            margin: auto;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        .modal-close {
+            color: #aaa;
+            position: absolute;
+            top: 1rem;
+            right: 1.25rem;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .modal-close:hover,
+        .modal-close:focus {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        /* Estilos para formularios dentro del modal */
+        .form-input {
+            width: 100%;
+            background-color: #374151; /* Gris más claro */
+            border: 1px solid #4B5563;
+            color: #E5E7EB;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin-top: 0.25rem;
+        }
+        .form-input:focus {
+            background-color: #4B5563;
+            border-color: #3B82F6;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+        .form-label {
+            color: #D1D5DB;
+            font-weight: 500;
+        }
+        
+        /* Botón primario (azul) */
+        .btn-primary {
+            width: 100%;
+            background-color: #3B82F6;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #2563EB;
+        }
+        
+        /* Botón secundario (rojo) */
+        .btn-danger {
+            background-color: #EF4444;
+            color: white;
+            font-weight: 500;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-danger:hover {
+            background-color: #DC2626;
+        }
+        
+        /* Botón secundario (gris) */
+        .btn-secondary {
+            background-color: #4B5563;
+            color: white;
+            font-weight: 500;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #6B7280;
+        }
+
+        /* Estilo para el botón de admin (engrane) */
+        #admin-gear {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 900;
+            cursor: pointer;
+            color: #9CA3AF;
+            transition: all 0.2s ease-in-out;
+        }
+        #admin-gear:hover {
+            color: #fff;
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        /* Estilos para la lista de apps en el admin */
+        #admin-app-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 1.5rem;
+            padding-right: 0.5rem; /* Para la barra de scroll */
+        }
+        .admin-list-item {
+            background-color: #374151;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .admin-list-item span {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 1rem;
+        }
+        .admin-list-item .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        /* Mensaje de error */
+        .error-message {
+            color: #F87171; /* Rojo claro */
+            font-size: 0.875rem;
+            margin-top: 1rem;
+            text-align: center;
+            display: none; /* Oculto por defecto */
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Botón de Engrane (Admin) - Oculto por defecto -->
+    <div id="admin-gear">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+        </svg>
+    </div>
+
+    <!-- Contenedor Principal -->
+    <div class="container mx-auto px-4 py-12">
+
+        <!-- Título Principal (Botón de Login) -->
+        <div class="text-center mb-12">
+            <h1 id="login-trigger" class="titulo-principal text-6xl md:text-7xl text-white">
+                CORNING APPS
+            </h1>
+        </div>
+        
+        <!-- Galería de Aplicaciones -->
+        <!-- Es un grid responsivo: 1 col en móvil, 2 en sm, 3 en md, 4 en lg, 5 en xl -->
+        <div id="app-gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
+            <!-- Las aplicaciones se cargarán aquí desde Firebase -->
+            <p id="loading-apps" class="text-center col-span-full">Cargando aplicaciones...</p>
+        </div> <!-- Fin de la galería -->
+
+    </div> <!-- Fin del contenedor principal -->
+
+    <!-- Modal de Login -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="login-close">&times;</span>
+            <h2 class="text-2xl font-bold mb-6 text-center text-white">Iniciar Sesión</h2>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="email" class="form-label">Correo Electrónico</label>
+                    <input type="email" id="login-email" class="form-input" required>
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input type="password" id="login-password" class="form-input" required>
+                </div>
+                <button type="submit" class="btn-primary">Entrar</button>
+                <p id="login-error" class="error-message">Error: Usuario o contraseña incorrectos.</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Administración de Apps -->
+    <div id="admin-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="admin-close">&times;</span>
+            <h2 class="text-2xl font-bold mb-6 text-white">Administración de Apps</h2>
+            
+            <!-- Formulario de Admin (Crear/Editar) -->
+            <form id="admin-form" class="space-y-4">
+                <input type="hidden" id="edit-id"> <!-- Para saber si estamos editando -->
+                
+                <div>
+                    <label for="app-nombre" class="form-label">Nombre de la App</label>
+                    <input type="text" id="app-nombre" class="form-input" required>
+                </div>
+                
+                <div>
+                    <label for="app-icono" class="form-label">Nombre del Ícono (ej. icono.png)</label>
+                    <input type="text" id="app-icono" class="form-input" placeholder="ej: cro.png" required>
+                </div>
+                
+                <div>
+                    <label for="app-desc" class="form-label">Descripción Breve</label>
+                    <textarea id="app-desc" class="form-input" rows="2"></textarea>
+                </div>
+
+                <div>
+                    <label for="app-link" class="form-label">Enlace (URL)</label>
+                    <input type="url" id="app-link" class="form-input" placeholder="https://..." required>
+                </div>
+
+                <button type="submit" id="admin-form-submit" class="btn-primary !mt-6">Guardar App</button>
+                <button type="button" id="admin-form-cancel" class="btn-secondary w-full" style="display: none;">Cancelar Edición</button>
+            </form>
+            
+            <!-- Línea divisoria -->
+            <hr class="border-gray-600 my-6">
+            
+            <!-- Lista de Apps Existentes -->
+            <h3 class="text-xl font-bold mb-4 text-white">Apps Actuales</h3>
+            <div id="admin-app-list">
+                <!-- Los items de la lista se cargarán aquí -->
+            </div>
+
+            <!-- Botón de Cerrar Sesión -->
+            <button id="logout-button" class="btn-danger w-full !mt-6">Cerrar Sesión</button>
+        </div>
+    </div>
+    
+    <!-- Scripts de Firebase -->
+    <script type="module">
+        // Importamos las funciones de Firebase (SDK modular v10+)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            onSnapshot, 
+            addDoc, 
+            doc, 
+            updateDoc, 
+            deleteDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Tu configuración de Firebase (la que proporcionaste)
+        // ¡Recuerda asegurar tu API Key en producción!
+        const firebaseConfig = {
+            apiKey: "AIzaSyDtlj3ppT9WBGMR60SZx0TZmAo3BXQWDX0",
+            authDomain: "rastreador-de-ordenes.firebaseapp.com",
+            databaseURL: "https://rastreador-de-ordenes-default-rtdb.firebaseio.com",
+            projectId: "rastreador-de-ordenes",
+            storageBucket: "rastreador-de-ordenes.firebasestorage.app",
+            messagingSenderId: "956052823395",
+            appId: "1:956052823395:web:9f5585de67784b413cc756"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Referencia a la colección de 'apps' en Firestore
+        const appsCollection = collection(db, "apps");
+
+        // --- REFERENCIAS A ELEMENTOS DEL DOM ---
+        
+        // Modales
+        const loginModal = document.getElementById("login-modal");
+        const adminModal = document.getElementById("admin-modal");
+        
+        // Disparadores de Modales
+        const loginTrigger = document.getElementById("login-trigger");
+        const adminGear = document.getElementById("admin-gear");
+        
+        // Botones de Cierre de Modales
+        const loginCloseBtn = document.getElementById("login-close");
+        const adminCloseBtn = document.getElementById("admin-close");
+        
+        // Formularios
+        const loginForm = document.getElementById("login-form");
+        const adminForm = document.getElementById("admin-form");
+        
+        // Campos del Formulario Admin
+        const editIdInput = document.getElementById("edit-id");
+        const appNombreInput = document.getElementById("app-nombre");
+        const appIconoInput = document.getElementById("app-icono");
+        const appDescInput = document.getElementById("app-desc");
+        const appLinkInput = document.getElementById("app-link");
+        const adminFormSubmitBtn = document.getElementById("admin-form-submit");
+        const adminFormCancelBtn = document.getElementById("admin-form-cancel");
+        
+        // Contenedores de listas
+        const appGallery = document.getElementById("app-gallery");
+        const adminAppList = document.getElementById("admin-app-list");
+        const loadingAppsMsg = document.getElementById("loading-apps");
+
+        // Otros Botones
+        const logoutButton = document.getElementById("logout-button");
+        
+        // Mensajes de error
+        const loginErrorMsg = document.getElementById("login-error");
+
+        // --- LÓGICA DE MODALES ---
+        
+        function openModal(modal) {
+            modal.style.display = "flex";
+        }
+
+        function closeModal(modal) {
+            modal.style.display = "none";
+        }
+        
+        loginTrigger.addEventListener("click", () => openModal(loginModal));
+        adminGear.addEventListener("click", () => openModal(adminModal));
+        
+        loginCloseBtn.addEventListener("click", () => closeModal(loginModal));
+        adminCloseBtn.addEventListener("click", () => closeModal(adminModal));
+        
+        // Cierra el modal si se hace clic fuera del contenido
+        window.addEventListener("click", (event) => {
+            if (event.target == loginModal) closeModal(loginModal);
+            if (event.target == adminModal) closeModal(adminModal);
+        });
+
+        // --- LÓGICA DE AUTENTICACIÓN ---
+
+        // Escucha cambios en el estado de autenticación
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Usuario está logueado
+                console.log("Usuario autenticado:", user.email);
+                adminGear.style.display = "block"; // Muestra el engrane
+                closeModal(loginModal); // Cierra modal de login si está abierto
+                loginForm.reset(); // Limpia formulario de login
+                loginErrorMsg.style.display = "none";
+            } else {
+                // Usuario está deslogueado
+                console.log("Usuario no autenticado.");
+                adminGear.style.display = "none"; // Oculta el engrane
+                closeModal(adminModal); // Cierra modal de admin si está abierto
+            }
+        });
+
+        // Manejar envío del formulario de login
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("login-email").value;
+            const password = document.getElementById("login-password").value;
+            loginErrorMsg.style.display = "none"; // Oculta error previo
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // El onAuthStateChanged se encargará de cerrar el modal
+            } catch (error) {
+                console.error("Error al iniciar sesión:", error.message);
+                loginErrorMsg.textContent = "Error: " + error.message;
+                loginErrorMsg.style.display = "block";
+            }
+        });
+
+        // Manejar cierre de sesión
+        logoutButton.addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+                // El onAuthStateChanged se encargará de ocultar el engrane y modal
+            } catch (error) {
+                console.error("Error al cerrar sesión:", error);
+            }
+        });
+
+        // --- LÓGICA DE FIRESTORE (CRUD) ---
+
+        // C (Create) y U (Update)
+        adminForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const appData = {
+                nombre: appNombreInput.value,
+                icono: appIconoInput.value,
+                descripcion: appDescInput.value,
+                link: appLinkInput.value,
+                creadoEn: serverTimestamp() // Agrega marca de tiempo
+            };
+            
+            const appId = editIdInput.value;
+
+            try {
+                if (appId) {
+                    // --- UPDATE ---
+                    // Estamos editando
+                    const appRef = doc(db, "apps", appId);
+                    await updateDoc(appRef, appData);
+                    console.log("App actualizada con ID:", appId);
+                } else {
+                    // --- CREATE ---
+                    // Estamos creando una nueva
+                    const docRef = await addDoc(appsCollection, appData);
+                    console.log("App guardada con ID:", docRef.id);
+                }
+                resetAdminForm(); // Limpia el formulario
+                
+            } catch (error) {
+                console.error("Error al guardar la app:", error);
+            }
+        });
+
+        // R (Read) - Cargar apps en tiempo real
+        onSnapshot(appsCollection, (snapshot) => {
+            if (snapshot.empty) {
+                loadingAppsMsg.textContent = "No hay aplicaciones para mostrar.";
+                return;
+            }
+            
+            loadingAppsMsg.style.display = "none";
+            appGallery.innerHTML = ""; // Limpia galería principal
+            adminAppList.innerHTML = ""; // Limpia lista de admin
+            
+            snapshot.docs.forEach(doc => {
+                const app = doc.data();
+                const id = doc.id;
+                
+                // Renderizar en la galería principal
+                renderAppCard(app, id);
+                
+                // Renderizar en la lista del admin
+                renderAdminListItem(app, id);
+            });
+        });
+
+        // Función para renderizar la tarjeta de la app en la galería
+        function renderAppCard(app, id) {
+            const card = document.createElement("a");
+            card.href = app.link;
+            card.target = "_blank"; // Abrir en nueva pestaña
+            card.rel = "noopener noreferrer";
+            card.className = "app-card";
+            card.setAttribute("data-id", id);
+            
+            card.innerHTML = `
+                <img src="${app.icono}" 
+                     alt="Icono de ${app.nombre}"
+                     onerror="this.src='https://placehold.co/96x96/FFFFFF/333333?text=${app.nombre.charAt(0)}'">
+                <span class="app-card-nombre">${app.nombre}</span>
+                <span class="app-card-desc">${app.descripcion}</span>
+            `;
+            appGallery.appendChild(card);
+        }
+
+        // Función para renderizar el item en la lista de admin
+        function renderAdminListItem(app, id) {
+            const item = document.createElement("div");
+            item.className = "admin-list-item";
+            item.setAttribute("data-id", id);
+            
+            // Guardamos todos los datos en atributos data-* para editarlos fácilmente
+            item.setAttribute("data-nombre", app.nombre);
+            item.setAttribute("data-icono", app.icono);
+            item.setAttribute("data-desc", app.descripcion);
+            item.setAttribute("data-link", app.link);
+            
+            item.innerHTML = `
+                <span>${app.nombre}</span>
+                <div class="btn-group">
+                    <button class="btn-secondary edit-btn">Editar</button>
+                    <button class="btn-danger delete-btn">Borrar</button>
+                </div>
+            `;
+            adminAppList.appendChild(item);
+        }
+        
+        // Manejar clics en la lista de admin (para Editar y Borrar)
+        adminAppList.addEventListener("click", (e) => {
+            const target = e.target;
+            const item = target.closest(".admin-list-item");
+            if (!item) return;
+            
+            const appId = item.getAttribute("data-id");
+
+            if (target.classList.contains("edit-btn")) {
+                // --- UPDATE (Iniciar Edición) ---
+                // Llenar el formulario con los datos del item
+                editIdInput.value = appId;
+                appNombreInput.value = item.getAttribute("data-nombre");
+                appIconoInput.value = item.getAttribute("data-icono");
+                appDescInput.value = item.getAttribute("data-desc");
+                appLinkInput.value = item.getAttribute("data-link");
+                
+                // Cambiar botón de guardar
+                adminFormSubmitBtn.textContent = "Actualizar App";
+                adminFormCancelBtn.style.display = "block";
+                
+                // Scroll al formulario
+                adminForm.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            if (target.classList.contains("delete-btn")) {
+                // --- DELETE ---
+                // Usamos un simple prompt como confirmación (idealmente sería un modal)
+                if (true) { // Reemplazado el confirm()
+                    deleteApp(appId);
+                }
+            }
+        });
+        
+        // D (Delete) - Función para borrar
+        async function deleteApp(id) {
+            try {
+                const appRef = doc(db, "apps", id);
+                await deleteDoc(appRef);
+                console.log("App eliminada con ID:", id);
+                resetAdminForm(); // Resetea por si estábamos editando esta app
+            } catch (error) {
+                console.error("Error al eliminar la app:", error);
+            }
+        }
+        
+        // Botón de Cancelar Edición
+        adminFormCancelBtn.addEventListener("click", resetAdminForm);
+
+        // Función para limpiar/resetear el formulario de admin
+        function resetAdminForm() {
+            adminForm.reset();
+            editIdInput.value = ""; // Limpia el ID de edición
+            adminFormSubmitBtn.textContent = "Guardar App";
+            adminFormCancelBtn.style.display = "none";
+        }
+
+    </script>
+</body>
+</html>
+
