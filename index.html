@@ -136,7 +136,6 @@
             background-color: #1F2937;
             color: #E5E7EB;
             margin: auto;
-            /* --- CAMBIO AQUÍ (Eliminamos padding general) --- */
             padding: 0; 
             border: 1px solid rgba(255, 255, 255, 0.1);
             width: 90%;
@@ -144,7 +143,7 @@
             border-radius: 1rem;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
             position: relative;
-            overflow: hidden; /* Para el borde redondeado */
+            overflow: hidden; 
         }
         #details-modal .modal-content {
              max-width: 600px; 
@@ -168,30 +167,26 @@
         }
         
         /* Estilos para Modal de Detalles */
-        
-        /* --- CAMBIO AQUÍ (Ajuste de Icono Principal) --- */
         #details-icono {
             width: 12rem; /* 192px */
             height: 12rem; /* 192px */
-            border-radius: 1.5rem; /* Bordes redondeados */
-            object-fit: cover; /* Para llenar el espacio */
+            border-radius: 1.5rem; 
+            object-fit: cover; 
             background-color: rgba(255, 255, 255, 0.2); 
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            margin-bottom: 1.5rem; /* Espacio debajo */
+            margin-bottom: 1.5rem; 
         }
-        /* --- FIN DEL CAMBIO --- */
         
         #details-contenido {
             padding: 2rem;
-            text-align: center; /* Centramos todo el contenido */
+            padding-top: 1rem; /* Reducimos padding superior */
+            text-align: center; 
         }
-        /* --- CAMBIO AQUÍ (Centramos el ícono) --- */
         .details-icono-wrapper {
             display: flex;
             justify-content: center;
-            /* El padding top se lo da el details-contenido */
+            padding-top: 1rem; /* Añadimos padding aquí */
         }
-        /* --- FIN DEL CAMBIO --- */
         
         #details-nombre {
             font-size: 1.75rem;
@@ -199,17 +194,31 @@
             color: white;
             margin-bottom: 0.5rem;
         }
+        
+        /* --- CAMBIO AQUÍ (Descripción Acomodada) --- */
         #details-desc {
             font-size: 1rem;
             color: #D1D5DB;
             margin-bottom: 1.5rem;
+            line-height: 1.625; /* <-- MÁS ESPACIADO (leading-relaxed) */
         }
+        /* --- FIN DEL CAMBIO --- */
+        
+        /* --- CAMBIO AQUÍ (Texto de ayuda PWA) --- */
+        #details-pwa-info {
+            font-size: 0.875rem; /* text-sm */
+            color: #9CA3AF; /* gray-400 */
+            margin-top: 0.75rem; /* mt-3 */
+            display: none; /* Oculto por defecto */
+        }
+        /* --- FIN DEL CAMBIO --- */
+
         
         /* Estilos para Galería de Capturas */
         #details-screenshots-container {
             display: none; 
             padding: 0 2rem 2rem 2rem; 
-            text-align: left; /* Devolvemos el texto a la izquierda */
+            text-align: left; 
         }
         #details-screenshots-container h3 {
             font-size: 1.25rem;
@@ -236,7 +245,7 @@
             background-color: rgba(0, 0, 0, 0.2); 
         }
         
-        /* --- CAMBIO AQUÍ (Estilo para Checkbox PWA) --- */
+        /* Estilo para Checkbox PWA */
         .form-checkbox {
             height: 1rem;
             width: 1rem;
@@ -249,7 +258,6 @@
             background-color: #3B82F6;
             border-color: #3B82F6;
         }
-        /* --- FIN DEL CAMBIO --- */
         
         /* Formularios y Botones */
         .form-input {
@@ -286,12 +294,10 @@
         .btn-primary {
             background-color: #3B82F6;
             color: white;
-            /* --- CAMBIO AQUÍ (Añadimos flex para el icono) --- */
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem; /* Espacio entre icono y texto */
-            /* --- FIN DEL CAMBIO --- */
+            gap: 0.5rem; 
         }
         .btn-primary:hover {
             background-color: #2563EB;
@@ -424,7 +430,7 @@
 
     <!-- Modal de Login -->
     <div id="login-modal" class="modal">
-        <div class="modal-content admin-modal-content"> <!-- Añadido padding aquí -->
+        <div class="modal-content admin-modal-content"> 
             <span class="modal-close" id="login-close">&times;</span>
             <h2 class="text-2xl font-bold mb-6 text-center text-white">Iniciar Sesión</h2>
             <form id="login-form">
@@ -444,7 +450,7 @@
 
     <!-- Modal de Administración de Apps -->
     <div id="admin-modal" class="modal">
-        <div class="modal-content admin-modal-content"> <!-- Añadido padding aquí -->
+        <div class="modal-content admin-modal-content"> 
             <span class="modal-close" id="admin-close">&times;</span>
             <h2 class="text-2xl font-bold mb-6 text-white">Administración de Apps</h2>
             
@@ -476,12 +482,10 @@
                     <input type="text" id="app-screenshots" class="form-input" placeholder="https://.../img1.png, https://.../img2.png">
                 </div>
 
-                <!-- --- CAMBIO AQUÍ (Checkbox PWA) --- -->
                 <div class="flex items-center pt-2">
                     <input type="checkbox" id="app-is-pwa" class="form-checkbox">
                     <label for="app-is-pwa" class="ml-2 text-sm form-label">Es una PWA (App Instalable)</label>
                 </div>
-                <!-- --- FIN DEL CAMBIO --- -->
 
                 <button type="submit" id="admin-form-submit" class="btn btn-primary !mt-6">Guardar App</button>
                 <button type="button" id="admin-form-cancel" class="btn btn-secondary w-full" style="display: none;">Cancelar Edición</button>
@@ -506,20 +510,21 @@
             <!-- Contenido Principal -->
             <div id="details-contenido">
                 
-                <!-- --- CAMBIO AQUÍ (Wrapper para centrar el icono) --- -->
                 <div class="details-icono-wrapper">
                     <img id="details-icono" src="" alt="Icono de la App">
                 </div>
-                <!-- --- FIN DEL CAMBIO --- -->
 
                 <h2 id="details-nombre" class="text-3xl font-bold mb-2 text-white">Nombre de la App</h2>
                 <p id="details-desc" class="text-lg text-gray-300 mb-6">Descripción completa de la aplicación...</p>
                 
-                <!-- --- CAMBIO AQUÍ (Botón con span para texto) --- -->
                 <a id="details-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
-                    <!-- El SVG se insertará aquí con JS -->
                     <span id="details-link-text">Ir a la Aplicación</span>
                 </a>
+                
+                <!-- --- CAMBIO AQUÍ (Texto de ayuda PWA) --- -->
+                <p id="details-pwa-info">
+                    Serás redirigido. Busca el ícono [ + ] en tu navegador para instalarla.
+                </p>
                 <!-- --- FIN DEL CAMBIO --- -->
             </div>
             
@@ -598,7 +603,7 @@
         const appDescInput = document.getElementById("app-desc");
         const appLinkInput = document.getElementById("app-link");
         const appScreenshotsInput = document.getElementById("app-screenshots"); 
-        const appIsPWAInput = document.getElementById("app-is-pwa"); // <-- Nuevo
+        const appIsPWAInput = document.getElementById("app-is-pwa"); 
         const adminFormSubmitBtn = document.getElementById("admin-form-submit");
         const adminFormCancelBtn = document.getElementById("admin-form-cancel");
         
@@ -648,18 +653,18 @@
                 document.getElementById("details-nombre").textContent = card.dataset.nombre;
                 document.getElementById("details-desc").textContent = card.dataset.desc;
                 
-                // --- CAMBIO AQUÍ (Lógica del botón PWA) ---
                 const isPWA = card.dataset.ispwa === 'true';
                 const button = document.getElementById("details-link");
                 const buttonText = document.getElementById("details-link-text");
+                const pwaInfo = document.getElementById("details-pwa-info"); // <-- Nuevo
                 const oldIcon = button.querySelector('svg');
-                if (oldIcon) oldIcon.remove(); // Limpiar icono anterior
+                if (oldIcon) oldIcon.remove(); 
 
-                button.href = card.dataset.link; // Asignar el link
+                button.href = card.dataset.link; 
 
                 if (isPWA) {
                     buttonText.textContent = "Instalar Aplicación";
-                    // Icono de Descarga
+                    pwaInfo.style.display = "block"; // <-- Nuevo: Mostrar texto PWA
                     button.insertAdjacentHTML('afterbegin', `
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -667,14 +672,13 @@
                     `);
                 } else {
                     buttonText.textContent = "Ir a la Aplicación";
-                    // Icono de Enlace Externo
+                    pwaInfo.style.display = "none"; // <-- Nuevo: Ocultar texto PWA
                     button.insertAdjacentHTML('afterbegin', `
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                         </svg>
                     `);
                 }
-                // --- FIN DEL CAMBIO ---
                 
                 const screenshotsContainer = document.getElementById("details-screenshots-container");
                 const gallery = document.getElementById("details-screenshots-gallery");
@@ -776,7 +780,7 @@
                     descripcion: appDescInput.value,
                     link: appLinkInput.value,
                     screenshots: screenshotsArray, 
-                    isPWA: appIsPWAInput.checked // <-- Nuevo
+                    isPWA: appIsPWAInput.checked 
                 };
             } else {
                 // Creando
@@ -788,7 +792,7 @@
                     creadoEn: serverTimestamp(),
                     orden: currentAppCount,
                     screenshots: screenshotsArray,
-                    isPWA: appIsPWAInput.checked // <-- Nuevo
+                    isPWA: appIsPWAInput.checked 
                 };
             }
             
@@ -853,7 +857,7 @@
             card.setAttribute("data-desc", app.descripcion);
             card.setAttribute("data-link", app.link);
             card.setAttribute("data-screenshots", JSON.stringify(app.screenshots || []));
-            card.setAttribute("data-ispwa", app.isPWA || false); // <-- Nuevo
+            card.setAttribute("data-ispwa", app.isPWA || false); 
             
             card.classList.add("card-fade-in");
             card.style.animationDelay = `${index * 80}ms`;
@@ -878,7 +882,7 @@
             item.setAttribute("data-desc", app.descripcion);
             item.setAttribute("data-link", app.link);
             item.setAttribute("data-screenshots", JSON.stringify(app.screenshots || []));
-            item.setAttribute("data-ispwa", app.isPWA || false); // <-- Nuevo
+            item.setAttribute("data-ispwa", app.isPWA || false); 
             
             item.innerHTML = `
                 <span>${app.nombre}</span>
@@ -905,7 +909,7 @@
                 appLinkInput.value = item.getAttribute("data-link");
                 const screenshots = JSON.parse(item.getAttribute("data-screenshots") || '[]');
                 appScreenshotsInput.value = screenshots.join(', '); 
-                appIsPWAInput.checked = item.getAttribute("data-ispwa") === 'true'; // <-- Nuevo
+                appIsPWAInput.checked = item.getAttribute("data-ispwa") === 'true'; 
                 
                 adminFormSubmitBtn.textContent = "Actualizar App";
                 adminFormCancelBtn.style.display = "block";
