@@ -63,15 +63,11 @@
              height: 10rem; /* 160px */
              border-radius: 1.25rem;
              margin-bottom: 1.5rem;
-             object-fit: cover;
+             object-fit: cover; /* Mantenemos 'cover' aquí para la vista de galería */
              background-color: rgba(255, 255, 0.2);
-             /* --- CAMBIO AQUÍ (Eliminamos el 'transform' del CSS) --- */
              transition: transform 0.3s ease-in-out; 
              pointer-events: none; 
         }
-        
-        /* --- CAMBIO AQUÍ (Efecto de giro ELIMINADO de :hover) --- */
-        /* Ya no hay .app-card:hover img { ... } */
         
         .app-card-nombre {
             font-size: 1.125rem; /* text-lg */
@@ -86,7 +82,7 @@
             flex-grow: 1; 
             pointer-events: none;
             
-            /* Para descripciones cortas */
+            /* Limitar descripción en tarjeta */
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
@@ -148,7 +144,6 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
             position: relative;
         }
-        /* Aumentamos el ancho máximo para el modal de detalles */
         #details-modal .modal-content {
              max-width: 600px; 
         }
@@ -162,6 +157,7 @@
             font-weight: bold;
             cursor: pointer;
             line-height: 1;
+            z-index: 10; /* Asegura que esté sobre la imagen */
         }
         .modal-close:hover,
         .modal-close:focus {
@@ -174,12 +170,16 @@
             padding: 0; 
             overflow: hidden; 
         }
+        
+        /* --- CAMBIO AQUÍ (Ajuste de Icono Principal) --- */
         #details-icono {
             width: 100%;
-            height: 250px; /* Un poco más grande */
-            object-fit: cover;
-            background-color: rgba(255, 255, 255, 0.1);
+            height: 250px;
+            object-fit: contain; /* <-- ESTE ES EL ARREGLO */
+            background-color: rgba(0, 0, 0, 0.2); /* <-- Fondo para 'contain' */
         }
+        /* --- FIN DEL CAMBIO --- */
+        
         #details-contenido {
             padding: 2rem;
         }
@@ -195,10 +195,10 @@
             margin-bottom: 1.5rem;
         }
         
-        /* --- CAMBIO AQUÍ (Estilos para Galería de Capturas) --- */
+        /* Estilos para Galería de Capturas */
         #details-screenshots-container {
-            display: none; /* Oculto si no hay capturas */
-            padding: 0 2rem 2rem 2rem; /* Padding solo horizontal y abajo */
+            display: none; 
+            padding: 0 2rem 2rem 2rem; 
         }
         #details-screenshots-container h3 {
             font-size: 1.25rem;
@@ -208,20 +208,22 @@
         }
         .screenshots-gallery {
             display: flex;
-            overflow-x: auto; /* Permite scroll horizontal */
+            overflow-x: auto; 
             gap: 1rem;
-            padding-bottom: 1rem; /* Espacio para la barra de scroll */
-            /* Efecto de scroll 'snap' */
+            padding-bottom: 1rem; 
             scroll-snap-type: x mandatory;
         }
+        
+        /* --- CAMBIO AQUÍ (Ajuste de Capturas) --- */
         .screenshots-gallery img {
-            width: 80%; /* Ocupa el 80% del modal */
-            height: auto;
-            flex-shrink: 0; /* Evita que se encojan */
+            height: 220px; /* <-- Altura Fija */
+            width: auto;   /* <-- Ancho Automático */
+            flex-shrink: 0; 
             border-radius: 0.5rem;
-            object-fit: cover;
+            object-fit: contain; /* <-- ESTE ES EL ARREGLO */
             border: 1px solid rgba(255, 255, 255, 0.2);
-            scroll-snap-align: center; /* Centra la imagen al scrollear */
+            scroll-snap-align: center; 
+            background-color: rgba(0, 0, 0, 0.2); /* <-- Fondo para 'contain' */
         }
         /* --- FIN DEL CAMBIO --- */
         
@@ -255,7 +257,7 @@
             border: none;
             cursor: pointer;
             transition: background-color 0.2s;
-            text-decoration: none; /* Para los 'a' */
+            text-decoration: none;
         }
         .btn-primary {
             background-color: #3B82F6;
@@ -433,12 +435,10 @@
                     <input type="url" id="app-link" class="form-input" placeholder="https://..." required>
                 </div>
                 
-                <!-- --- CAMBIO AQUÍ (Nuevo campo para Capturas) --- -->
                 <div>
                     <label for="app-screenshots" class="form-label">Capturas (URLs separadas por coma)</label>
                     <input type="text" id="app-screenshots" class="form-input" placeholder="https://.../img1.png, https://.../img2.png">
                 </div>
-                <!-- --- FIN DEL CAMBIO --- -->
 
                 <button type="submit" id="admin-form-submit" class="btn btn-primary !mt-6">Guardar App</button>
                 <button type="button" id="admin-form-cancel" class="btn btn-secondary w-full" style="display: none;">Cancelar Edición</button>
@@ -473,14 +473,13 @@
                 </a>
             </div>
             
-            <!-- --- CAMBIO AQUÍ (Galería de Capturas) --- -->
+            <!-- Galería de Capturas -->
             <div id="details-screenshots-container">
                 <h3>Capturas de Pantalla</h3>
                 <div id="details-screenshots-gallery" class="screenshots-gallery">
                     <!-- Las imágenes se insertarán aquí con JS -->
                 </div>
             </div>
-            <!-- --- FIN DEL CAMBIO --- -->
         </div>
     </div>
     
@@ -548,7 +547,7 @@
         const appIconoInput = document.getElementById("app-icono");
         const appDescInput = document.getElementById("app-desc");
         const appLinkInput = document.getElementById("app-link");
-        const appScreenshotsInput = document.getElementById("app-screenshots"); // <-- Nuevo
+        const appScreenshotsInput = document.getElementById("app-screenshots"); 
         const adminFormSubmitBtn = document.getElementById("admin-form-submit");
         const adminFormCancelBtn = document.getElementById("admin-form-cancel");
         
@@ -591,7 +590,6 @@
             if (card && !card.classList.contains("sortable-chosen")) {
                 e.preventDefault();
                 
-                // Rellenar el modal con los datos de la tarjeta
                 document.getElementById("details-icono").src = card.dataset.icono;
                 document.getElementById("details-icono").onerror = () => {
                      document.getElementById("details-icono").src = `https://placehold.co/600x250/FFFFFF/333333?text=${card.dataset.nombre}`
@@ -600,30 +598,28 @@
                 document.getElementById("details-desc").textContent = card.dataset.desc;
                 document.getElementById("details-link").href = card.dataset.link;
                 
-                // --- CAMBIO AQUÍ (Lógica de Galería de Capturas) ---
                 const screenshotsContainer = document.getElementById("details-screenshots-container");
                 const gallery = document.getElementById("details-screenshots-gallery");
-                gallery.innerHTML = ""; // Limpiar galería
+                gallery.innerHTML = ""; 
                 
                 const screenshots = JSON.parse(card.dataset.screenshots || '[]');
                 
                 if (screenshots.length > 0) {
                     screenshots.forEach(src => {
-                        if(src) { // Evitar strings vacíos
+                        if(src) { 
                             const img = document.createElement("img");
                             img.src = src;
                             img.alt = `Captura de ${card.dataset.nombre}`;
                             img.onerror = () => {
-                                img.src = `https://placehold.co/400x200/FFFFFF/333333?text=Error`
+                                img.src = `https://placehold.co/400x220/FFFFFF/333333?text=Error`
                             };
                             gallery.appendChild(img);
                         }
                     });
-                    screenshotsContainer.style.display = "block"; // Mostrar contenedor
+                    screenshotsContainer.style.display = "block"; 
                 } else {
-                    screenshotsContainer.style.display = "none"; // Ocultar si no hay capturas
+                    screenshotsContainer.style.display = "none"; 
                 }
-                // --- FIN DEL CAMBIO ---
 
                 openModal(detailsModal);
             }
@@ -687,12 +683,10 @@
             e.preventDefault();
             
             const appId = editIdInput.value;
-            // --- CAMBIO AQUÍ (Procesar screenshots) ---
             const screenshotsArray = appScreenshotsInput.value
                 .split(',')
                 .map(s => s.trim())
-                .filter(s => s); // Elimina strings vacíos
-            // --- FIN DEL CAMBIO ---
+                .filter(s => s); 
 
             let appData;
 
@@ -703,7 +697,7 @@
                     icono: appIconoInput.value,
                     descripcion: appDescInput.value,
                     link: appLinkInput.value,
-                    screenshots: screenshotsArray // <-- Nuevo
+                    screenshots: screenshotsArray 
                 };
             } else {
                 // Creando
@@ -714,7 +708,7 @@
                     link: appLinkInput.value,
                     creadoEn: serverTimestamp(),
                     orden: currentAppCount,
-                    screenshots: screenshotsArray // <-- Nuevo
+                    screenshots: screenshotsArray 
                 };
             }
             
@@ -778,9 +772,7 @@
             card.setAttribute("data-icono", app.icono);
             card.setAttribute("data-desc", app.descripcion);
             card.setAttribute("data-link", app.link);
-            // --- CAMBIO AQUÍ (Guardar screenshots en la tarjeta) ---
             card.setAttribute("data-screenshots", JSON.stringify(app.screenshots || []));
-            // --- FIN DEL CAMBIO ---
             
             card.classList.add("card-fade-in");
             card.style.animationDelay = `${index * 80}ms`;
@@ -804,9 +796,7 @@
             item.setAttribute("data-icono", app.icono);
             item.setAttribute("data-desc", app.descripcion);
             item.setAttribute("data-link", app.link);
-            // --- CAMBIO AQUÍ (Guardar screenshots en el item) ---
             item.setAttribute("data-screenshots", JSON.stringify(app.screenshots || []));
-            // --- FIN DEL CAMBIO ---
             
             item.innerHTML = `
                 <span>${app.nombre}</span>
@@ -831,10 +821,8 @@
                 appIconoInput.value = item.getAttribute("data-icono");
                 appDescInput.value = item.getAttribute("data-desc");
                 appLinkInput.value = item.getAttribute("data-link");
-                // --- CAMBIO AQUÍ (Rellenar campo de screenshots) ---
                 const screenshots = JSON.parse(item.getAttribute("data-screenshots") || '[]');
-                appScreenshotsInput.value = screenshots.join(', '); // Unimos con coma y espacio
-                // --- FIN DEL CAMBIO ---
+                appScreenshotsInput.value = screenshots.join(', '); 
                 
                 adminFormSubmitBtn.textContent = "Actualizar App";
                 adminFormCancelBtn.style.display = "block";
@@ -943,21 +931,27 @@
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
         async function fetchWithRetry(url, options, retries = 3, backoff = 1000) {
+            let lastResponse = null; // Guardar la última respuesta
             for (let i = 0; i < retries; i++) {
                 try {
                     const response = await fetch(url, options);
+                    lastResponse = await response.json(); // Intentar parsear JSON
+                    
                     if (response.ok) {
-                        return response.json();
+                        return lastResponse; // Éxito
                     }
-                    console.warn(`Intento ${i + 1} fallido: ${response.statusText}`);
+                    console.warn(`Intento ${i + 1} fallido (Respuesta no OK): ${response.statusText}`, lastResponse);
                 } catch (error) {
-                    console.warn(`Intento ${i + 1} fallido (error de red): ${error.message}`);
+                    console.warn(`Intento ${i + 1} fallido (Error de red/fetch): ${error.message}`);
                 }
                 await delay(backoff);
                 backoff *= 2; 
             }
+            // Si todos los reintentos fallan
+            console.error("Fallaron todos los intentos de fetch. Última respuesta recibida:", lastResponse);
             throw new Error("No se pudo obtener respuesta de la API después de varios intentos.");
         }
+
 
         async function callGeminiAPI(userQuery) {
             const apiKey = ""; 
@@ -976,26 +970,23 @@
                 body: JSON.stringify(payload)
             };
 
-            let result; // Declaramos fuera para poder loguearlo en el catch
+            let result; 
             try {
                 result = await fetchWithRetry(apiUrl, options);
             } catch (fetchError) {
-                console.error("Error en fetchWithRetry:", fetchError);
+                console.error("Error en fetchWithRetry:", fetchError.message);
                 throw new Error("Error de red al contactar la API de Gemini.");
             }
 
-            // --- CAMBIO AQUÍ (Mejora en el log de error) ---
             // Logueamos la respuesta completa SIEMPRE para depurar
             console.log("Respuesta completa de Gemini API:", JSON.stringify(result, null, 2));
 
             const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
             
             if (!text) {
-                // Si 'text' no existe, es el "Error de API"
                 console.error("La respuesta de la API no contenía 'candidates' o 'text'. Revisa la respuesta de arriba. Puede ser un error de API Key, facturación, o la API no está habilitada.", result);
                 throw new Error("La respuesta de la API no contiene texto válido.");
             }
-            // --- FIN DEL CAMBIO ---
             
             return text.replace(/```json|```/g, "").trim().replace(/^"|"$/g, '');
         }
@@ -1029,7 +1020,7 @@
                 const newDesc = await callGeminiAPI(prompt);
                 appDescInput.value = newDesc; 
             } catch (error) {
-                console.error("Error al llamar a Gemini API:", error);
+                console.error("Error al llamar a Gemini API:", error.message);
                 geminiLoading.textContent = "Error de API";
                 geminiLoading.style.color = "#F87171"; // Rojo
                 await delay(2000);
