@@ -8,7 +8,6 @@
     <!-- Cargamos Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- --- CAMBIO AQUÍ --- -->
     <!-- Google Font para la firma -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +15,6 @@
     
     <!-- SortableJS (Para arrastrar y soltar) -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <!-- --- FIN DEL CAMBIO --- -->
 
     <style>
         /* Estilos personalizados (fondo, fuente de título, modales) */
@@ -52,8 +50,9 @@
             padding: 1.5rem;
             border-radius: 1rem;
             height: 100%;
-            /* --- CAMBIO AQUÍ (Animación de entrada) --- */
             opacity: 0; /* Oculto al inicio para la animación */
+            /* --- CAMBIO AQUÍ (Modal de Detalles) --- */
+            cursor: pointer; /* Ahora es un div clickeable */
         }
         .app-card:hover {
             transform: scale(1.05);
@@ -67,65 +66,55 @@
              margin-bottom: 1.5rem;
              object-fit: cover;
              background-color: rgba(255, 255, 255, 0.2);
-             /* --- CAMBIO AQUÍ (Efecto de icono) --- */
              transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+             /* --- CAMBIO AQUÍ (Modal de Detalles) --- */
+             pointer-events: none; /* Evita que la imagen "robe" el clic de la tarjeta */
         }
         
-        /* Efecto de giro en icono (Sugerencia) */
         .app-card:hover img {
             transform: scale(1.05) rotate(10deg);
         }
-        /* --- FIN DEL CAMBIO --- */
         
         .app-card-nombre {
             font-size: 1.125rem; /* text-lg */
             font-weight: 600; /* semibold */
             color: white;
             margin-bottom: 0.25rem;
+            pointer-events: none;
         }
         .app-card-desc {
             font-size: 0.875rem; /* text-sm */
             color: #D1D5DB; /* gray-300 */
             flex-grow: 1; 
+            pointer-events: none;
         }
 
-        /* --- CAMBIO AQUÍ (Animación de entrada) --- */
+        /* Animación de entrada */
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .card-fade-in {
             animation: fadeInUp 0.5s ease-out forwards;
         }
-        /* --- FIN DEL CAMBIO --- */
 
-        /* --- CAMBIO AQUÍ (Estilos para SortableJS) --- */
-        /* Estilo del "fantasma" (dónde va a caer el item) */
+        /* Estilos para SortableJS */
         .sortable-ghost {
             opacity: 0.4;
             background-color: rgba(0, 100, 255, 0.3);
             border: 2px dashed rgba(255, 255, 255, 0.5);
             border-radius: 1rem;
         }
-        /* Estilo del item que estás arrastrando */
         .sortable-chosen {
             cursor: grabbing !important;
             transform: scale(1.05);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
-        /* Cursor de "agarrar" solo para admin */
         .admin-sortable .app-card {
             cursor: grab !important;
         }
-        /* --- FIN DEL CAMBIO --- */
         
-        /* Estilos de Modales (Sin cambios) */
+        /* Estilos de Modales */
         .modal {
             display: none; 
             position: fixed;
@@ -139,6 +128,8 @@
             backdrop-filter: blur(5px);
             align-items: center;
             justify-content: center;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
         }
         .modal-content {
             background-color: #1F2937;
@@ -167,8 +158,35 @@
             color: #fff;
             text-decoration: none;
         }
+        
+        /* --- CAMBIO AQUÍ (Estilos para Modal de Detalles) --- */
+        #details-modal .modal-content {
+            padding: 0; /* Sin padding para que la imagen llene la parte superior */
+            overflow: hidden; /* Para los bordes redondeados de la imagen */
+        }
+        #details-icono {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        #details-contenido {
+            padding: 2rem;
+        }
+        #details-nombre {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        #details-desc {
+            font-size: 1rem;
+            color: #D1D5DB;
+            margin-bottom: 1.5rem;
+        }
+        /* --- FIN DEL CAMBIO --- */
 
-        /* Formularios y Botones (Sin cambios) */
+        /* Formularios y Botones */
         .form-input {
             width: 100%;
             background-color: #374151;
@@ -188,16 +206,21 @@
             color: #D1D5DB;
             font-weight: 500;
         }
-        .btn-primary {
+        .btn {
+            display: inline-block;
+            text-align: center;
             width: 100%;
-            background-color: #3B82F6;
-            color: white;
             font-weight: 600;
             padding: 0.75rem;
             border-radius: 0.5rem;
             border: none;
             cursor: pointer;
             transition: background-color 0.2s;
+            text-decoration: none; /* Para los 'a' */
+        }
+        .btn-primary {
+            background-color: #3B82F6;
+            color: white;
         }
         .btn-primary:hover {
             background-color: #2563EB;
@@ -205,12 +228,6 @@
         .btn-danger {
             background-color: #EF4444;
             color: white;
-            font-weight: 500;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.375rem;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.2s;
         }
         .btn-danger:hover {
             background-color: #DC2626;
@@ -218,16 +235,12 @@
         .btn-secondary {
             background-color: #4B5563;
             color: white;
-            font-weight: 500;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.375rem;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.2s;
         }
         .btn-secondary:hover {
             background-color: #6B7280;
         }
+        
+        /* Admin Gear */
         #admin-gear {
             display: none; 
             position: fixed;
@@ -242,6 +255,8 @@
             color: #fff;
             transform: scale(1.1) rotate(15deg);
         }
+        
+        /* Lista de Admin */
         #admin-app-list {
             max-height: 300px;
             overflow-y: auto;
@@ -269,6 +284,8 @@
             gap: 0.5rem;
             flex-shrink: 0;
         }
+        
+        /* Error Message */
         .error-message {
             color: #F87171; 
             font-size: 0.875rem;
@@ -276,13 +293,35 @@
             text-align: center;
             display: none; 
         }
+
+        /* --- CAMBIO AQUÍ (Botón Gemini) --- */
+        .gemini-btn {
+            background: none;
+            border: none;
+            color: #a5b4fc; /* Indigo-300 */
+            cursor: pointer;
+            font-size: 1.5rem; /* text-2xl */
+            line-height: 1;
+            padding: 0;
+            transition: all 0.2s;
+        }
+        .gemini-btn:hover {
+            color: #c7d2fe; /* Indigo-200 */
+            transform: scale(1.2);
+        }
+        .gemini-btn:disabled {
+            color: #6B7280; /* Gray-500 */
+            cursor: not-allowed;
+            transform: none;
+        }
+        /* --- FIN DEL CAMBIO --- */
     </style>
 </head>
 <body class="min-h-screen">
 
     <!-- Botón de Engrane (Admin) -->
     <div id="admin-gear">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0.0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
         </svg>
     </div>
@@ -292,27 +331,22 @@
 
         <!-- Título Principal (Botón de Login) -->
         <div class="text-center mb-12">
-            
-            <!-- Título reducido -->
             <h1 id="login-trigger" class="titulo-principal text-3xl md:text-4xl text-white">
                 CORNING APPS
             </h1>
-            <!-- Texto "Powered by" con fuente de firma -->
             <p class="text-base text-white opacity-30 font-light tracking-wide mt-3 font-signature">
                 Powered By Ulises Luna
             </p>
-            
         </div>
         
         <!-- Galería de Aplicaciones -->
         <div id="app-gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
-            <!-- Las aplicaciones se cargarán aquí desde Firebase -->
             <p id="loading-apps" class="text-center col-span-full">Cargando aplicaciones...</p>
-        </div> <!-- Fin de la galería -->
+        </div>
 
-    </div> <!-- Fin del contenedor principal -->
+    </div>
 
-    <!-- Modales (Login y Admin) ... (Sin cambios) -->
+    <!-- Modal de Login -->
     <div id="login-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close" id="login-close">&times;</span>
@@ -326,12 +360,13 @@
                     <label for="password" class="form-label">Contraseña</label>
                     <input type="password" id="login-password" class="form-input" required>
                 </div>
-                <button type="submit" class="btn-primary">Entrar</button>
+                <button type="submit" class="btn btn-primary">Entrar</button>
                 <p id="login-error" class="error-message">Error: Usuario o contraseña incorrectos.</p>
             </form>
         </div>
     </div>
 
+    <!-- Modal de Administración de Apps -->
     <div id="admin-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close" id="admin-close">&times;</span>
@@ -339,41 +374,65 @@
             
             <form id="admin-form" class="space-y-4">
                 <input type="hidden" id="edit-id"> 
-                
                 <div>
                     <label for="app-nombre" class="form-label">Nombre de la App</label>
                     <input type="text" id="app-nombre" class="form-input" required>
                 </div>
-                
                 <div>
                     <label for="app-icono" class="form-label">Nombre del Ícono (ej. icono.png)</label>
                     <input type="text" id="app-icono" class="form-input" placeholder="ej: cro.png" required>
                 </div>
-                
                 <div>
-                    <label for="app-desc" class="form-label">Descripción Breve</label>
+                    <!-- --- CAMBIO AQUÍ (Label con Botón Gemini) --- -->
+                    <div class="flex justify-between items-center mb-1">
+                        <label for="app-desc" class="form-label">Descripción Breve</label>
+                        <button type="button" id="gemini-enhance-btn" class="gemini-btn" title="Generar/Mejorar con IA">✨</button>
+                    </div>
+                    <!-- --- FIN DEL CAMBIO --- -->
                     <textarea id="app-desc" class="form-input" rows="2"></textarea>
+                    <!-- --- CAMBIO AQUÍ (Loading Spinner) --- -->
+                    <span id="gemini-loading" class="text-sm text-gray-400 mt-1" style="display: none;">Generando...</span>
+                    <!-- --- FIN DEL CAMBIO --- -->
                 </div>
-
                 <div>
                     <label for="app-link" class="form-label">Enlace (URL)</label>
                     <input type="url" id="app-link" class="form-input" placeholder="https://..." required>
                 </div>
-
-                <button type="submit" id="admin-form-submit" class="btn-primary !mt-6">Guardar App</button>
-                <button type="button" id="admin-form-cancel" class="btn-secondary w-full" style="display: none;">Cancelar Edición</button>
+                <button type="submit" id="admin-form-submit" class="btn btn-primary !mt-6">Guardar App</button>
+                <button type="button" id="admin-form-cancel" class="btn btn-secondary w-full" style="display: none;">Cancelar Edición</button>
             </form>
             
             <hr class="border-gray-600 my-6">
             
             <h3 class="text-xl font-bold mb-4 text-white">Apps Actuales</h3>
             <div id="admin-app-list">
-                <!-- Los items de la lista se cargarán aquí -->
+                <!-- Items de la lista -->
             </div>
 
-            <button id="logout-button" class="btn-danger w-full !mt-6">Cerrar Sesión</button>
+            <button id="logout-button" class="btn btn-danger w-full !mt-6">Cerrar Sesión</button>
         </div>
     </div>
+    
+    <!-- --- CAMBIO AQUÍ (Nuevo Modal de Detalles) --- -->
+    <div id="details-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="details-close">&times;</span>
+            
+            <!-- Icono -->
+            <img id="details-icono" src="" alt="Icono de la App">
+            
+            <!-- Contenido -->
+            <div id="details-contenido">
+                <h2 id="details-nombre" class="text-3xl font-bold mb-2 text-white">Nombre de la App</h2>
+                <p id="details-desc" class="text-lg text-gray-300 mb-6">Descripción completa de la aplicación...</p>
+                
+                <a id="details-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                    Ir a la Aplicación
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- --- FIN DEL CAMBIO --- -->
     
     <!-- Scripts de Firebase -->
     <script type="module">
@@ -394,12 +453,10 @@
             updateDoc, 
             deleteDoc,
             serverTimestamp,
-            // --- CAMBIO AQUÍ (Nuevas importaciones) ---
             query,
             orderBy,
             getDocs,
             writeBatch
-            // --- FIN DEL CAMBIO ---
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         // Tu configuración de Firebase
@@ -421,15 +478,21 @@
         // Referencia a la colección de 'apps'
         const appsCollection = collection(db, "apps");
 
-        // --- REFERENCIAS AL DOM (Sin cambios) ---
+        // --- REFERENCIAS AL DOM ---
         const loginModal = document.getElementById("login-modal");
         const adminModal = document.getElementById("admin-modal");
+        const detailsModal = document.getElementById("details-modal"); // <-- Nuevo
+        
         const loginTrigger = document.getElementById("login-trigger");
         const adminGear = document.getElementById("admin-gear");
+        
         const loginCloseBtn = document.getElementById("login-close");
         const adminCloseBtn = document.getElementById("admin-close");
+        const detailsCloseBtn = document.getElementById("details-close"); // <-- Nuevo
+        
         const loginForm = document.getElementById("login-form");
         const adminForm = document.getElementById("admin-form");
+        
         const editIdInput = document.getElementById("edit-id");
         const appNombreInput = document.getElementById("app-nombre");
         const appIconoInput = document.getElementById("app-icono");
@@ -437,30 +500,64 @@
         const appLinkInput = document.getElementById("app-link");
         const adminFormSubmitBtn = document.getElementById("admin-form-submit");
         const adminFormCancelBtn = document.getElementById("admin-form-cancel");
+        
         const appGallery = document.getElementById("app-gallery");
         const adminAppList = document.getElementById("admin-app-list");
         const loadingAppsMsg = document.getElementById("loading-apps");
+
         const logoutButton = document.getElementById("logout-button");
         const loginErrorMsg = document.getElementById("login-error");
 
-        // --- CAMBIO AQUÍ (Variables para Sortable y Conteo) ---
-        let sortable = null;
-        let currentAppCount = 0; // Para asignar el 'orden' a apps nuevas
+        // --- CAMBIO AQUÍ (DOM Refs para Gemini) ---
+        const geminiEnhanceBtn = document.getElementById("gemini-enhance-btn");
+        const geminiLoading = document.getElementById("gemini-loading");
         // --- FIN DEL CAMBIO ---
 
-        // --- LÓGICA DE MODALES (Sin cambios) ---
+        // Variables para Sortable y Conteo
+        let sortable = null;
+        let currentAppCount = 0; 
+        let isBackfilling = false; // Para el bug de 'orden'
+
+        // --- LÓGICA DE MODALES ---
         function openModal(modal) { modal.style.display = "flex"; }
         function closeModal(modal) { modal.style.display = "none"; }
+        
         loginTrigger.addEventListener("click", () => openModal(loginModal));
         adminGear.addEventListener("click", () => openModal(adminModal));
+        
         loginCloseBtn.addEventListener("click", () => closeModal(loginModal));
         adminCloseBtn.addEventListener("click", () => closeModal(adminModal));
+        detailsCloseBtn.addEventListener("click", () => closeModal(detailsModal)); // <-- Nuevo
+        
         window.addEventListener("click", (event) => {
             if (event.target == loginModal) closeModal(loginModal);
             if (event.target == adminModal) closeModal(adminModal);
+            if (event.target == detailsModal) closeModal(detailsModal); // <-- Nuevo
         });
+        
+        // --- CAMBIO AQUÍ (Abrir modal de detalles) ---
+        appGallery.addEventListener("click", (e) => {
+            const card = e.target.closest(".app-card");
+            
+            // Si no estamos en modo admin, o si estamos en modo admin pero NO estamos arrastrando
+            if (card && !card.classList.contains("sortable-chosen")) {
+                e.preventDefault();
+                
+                // Rellenar el modal con los datos de la tarjeta
+                document.getElementById("details-icono").src = card.dataset.icono;
+                document.getElementById("details-icono").onerror = () => {
+                     document.getElementById("details-icono").src = `https://placehold.co/400x200/FFFFFF/333333?text=${card.dataset.nombre}`
+                };
+                document.getElementById("details-nombre").textContent = card.dataset.nombre;
+                document.getElementById("details-desc").textContent = card.dataset.desc;
+                document.getElementById("details-link").href = card.dataset.link;
+                
+                openModal(detailsModal);
+            }
+        });
+        // --- FIN DEL CAMBIO ---
 
-        // --- LÓGICA DE AUTENTICACIÓN (Modificada) ---
+        // --- LÓGICA DE AUTENTICACIÓN ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 // Usuario logueado
@@ -470,8 +567,11 @@
                 loginForm.reset(); 
                 loginErrorMsg.style.display = "none";
 
-                // --- CAMBIO AQUÍ (Activar Drag-and-Drop) ---
-                appGallery.classList.add("admin-sortable"); // Añade cursor 'grab'
+                // --- CAMBIO AQUÍ (Arreglo del Bug + Activar Drag-and-Drop) ---
+                if (!isBackfilling) {
+                    checkAndBackfillData(); // ¡Aquí está el arreglo!
+                }
+                appGallery.classList.add("admin-sortable"); 
                 if (!sortable) {
                     initSortable();
                 }
@@ -483,17 +583,15 @@
                 adminGear.style.display = "none"; 
                 closeModal(adminModal); 
 
-                // --- CAMBIO AQUÍ (Desactivar Drag-and-Drop) ---
                 appGallery.classList.remove("admin-sortable");
                 if (sortable) {
                     sortable.destroy();
                     sortable = null;
                 }
-                // --- FIN DEL CAMBIO ---
             }
         });
 
-        // Formulario de login (Sin cambios)
+        // Formulario de login
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const email = document.getElementById("login-email").value;
@@ -509,7 +607,7 @@
             }
         });
 
-        // Cerrar sesión (Sin cambios)
+        // Cerrar sesión
         logoutButton.addEventListener("click", async () => {
             try {
                 await signOut(auth);
@@ -518,9 +616,9 @@
             }
         });
 
-        // --- LÓGICA DE FIRESTORE (Modificada) ---
+        // --- LÓGICA DE FIRESTORE ---
 
-        // C (Create) y U (Update)
+        // C (Create) y U (Update) (Asigna 'orden' al crear)
         adminForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             
@@ -528,17 +626,15 @@
             let appData;
 
             if (appId) {
-                // Estamos actualizando (no modificamos el 'orden' aquí, se hace al arrastrar)
+                // Actualizando
                 appData = {
                     nombre: appNombreInput.value,
                     icono: appIconoInput.value,
                     descripcion: appDescInput.value,
                     link: appLinkInput.value,
-                    // No tocamos 'creadoEn' ni 'orden'
                 };
             } else {
-                // --- CAMBIO AQUÍ (Asignar 'orden' al crear) ---
-                // Estamos creando
+                // Creando
                 appData = {
                     nombre: appNombreInput.value,
                     icono: appIconoInput.value,
@@ -547,39 +643,38 @@
                     creadoEn: serverTimestamp(),
                     orden: currentAppCount // Asigna el siguiente número de orden
                 };
-                // --- FIN DEL CAMBIO ---
             }
             
             try {
                 if (appId) {
-                    // --- UPDATE ---
                     const appRef = doc(db, "apps", appId);
                     await updateDoc(appRef, appData);
                     console.log("App actualizada con ID:", appId);
                 } else {
-                    // --- CREATE ---
                     const docRef = await addDoc(appsCollection, appData);
                     console.log("App guardada con ID:", docRef.id);
                 }
-                resetAdminForm(); // Limpia el formulario
-                
+                resetAdminForm();
             } catch (error) {
                 console.error("Error al guardar la app:", error);
             }
         });
 
-        // --- CAMBIO AQUÍ (Query con orderBy) ---
         // R (Read) - Cargar apps en tiempo real, ORDENADAS
         const q = query(appsCollection, orderBy("orden")); // ¡REQUIERE ÍNDICE!
         
         onSnapshot(q, (snapshot) => {
-            // --- FIN DEL CAMBIO ---
-            
             currentAppCount = snapshot.size; // Actualiza el conteo global
             
-            if (snapshot.empty) {
-                appGallery.innerHTML = ""; // Limpia
+            if (snapshot.empty && !isBackfilling) {
+                appGallery.innerHTML = ""; 
                 loadingAppsMsg.textContent = "No hay aplicaciones para mostrar.";
+                loadingAppsMsg.style.display = "block";
+                return;
+            }
+            
+            if (snapshot.empty && isBackfilling) {
+                loadingAppsMsg.textContent = "Corrigiendo apps, un momento...";
                 loadingAppsMsg.style.display = "block";
                 return;
             }
@@ -588,45 +683,33 @@
             appGallery.innerHTML = ""; 
             adminAppList.innerHTML = ""; 
             
-            snapshot.docs.forEach((doc, index) => { // 'index' se usará para la animación
+            snapshot.docs.forEach((doc, index) => { 
                 const app = doc.data();
                 const id = doc.id;
-                
-                // --- CAMBIO AQUÍ (Pasamos 'index' a la función) ---
                 renderAppCard(app, id, index); 
-                // --- FIN DEL CAMBIO ---
-                
                 renderAdminListItem(app, id);
             });
         }, (error) => {
-            // --- CAMBIO AQUÍ (Manejo de error de índice) ---
             console.error("Error al leer de Firestore: ", error);
-            loadingAppsMsg.innerHTML = `
-                <p class="text-red-400">Error al cargar apps.</p>
-                <p class="text-sm text-yellow-300 mt-2">
-                    Si es la primera vez que usas el orden,
-                    <strong class="font-bold">revisa la consola (F12)</strong>.
-                    Firebase te dará un <strong class="font-bold">enlace</strong> 
-                    para crear el índice necesario.
-                </p>
-            `;
+            loadingAppsMsg.innerHTML = `<p class="text-red-400">Error al cargar apps. Revisa la consola (F12) para más detalles.</p>`;
             loadingAppsMsg.style.display = "block";
-            // --- FIN DEL CAMBIO ---
         });
 
-        // Renderizar tarjeta en galería (Modificada)
-        function renderAppCard(app, id, index) { // 'index' para la animación
-            const card = document.createElement("a");
-            card.href = app.link;
-            card.target = "_blank";
-            card.rel = "noopener noreferrer";
+        // --- CAMBIO AQUÍ (La tarjeta ahora es un DIV con data-*) ---
+        function renderAppCard(app, id, index) { 
+            const card = document.createElement("div"); // <-- YA NO ES 'a'
             card.className = "app-card";
             card.setAttribute("data-id", id);
             
-            // --- CAMBIO AQUÍ (Animación de entrada escalonada) ---
+            // Guardamos los datos para el modal de detalles
+            card.setAttribute("data-nombre", app.nombre);
+            card.setAttribute("data-icono", app.icono);
+            card.setAttribute("data-desc", app.descripcion);
+            card.setAttribute("data-link", app.link);
+            
+            // Animación de entrada
             card.classList.add("card-fade-in");
-            card.style.animationDelay = `${index * 80}ms`; // 80ms de retraso entre tarjetas
-            // --- FIN DEL CAMBIO ---
+            card.style.animationDelay = `${index * 80}ms`;
             
             card.innerHTML = `
                 <img src="${app.icono}" 
@@ -637,8 +720,9 @@
             `;
             appGallery.appendChild(card);
         }
+        // --- FIN DEL CAMBIO ---
 
-        // Renderizar item en lista de admin (Sin cambios)
+        // Renderizar item en lista de admin
         function renderAdminListItem(app, id) {
             const item = document.createElement("div");
             item.className = "admin-list-item";
@@ -651,14 +735,14 @@
             item.innerHTML = `
                 <span>${app.nombre}</span>
                 <div class="btn-group">
-                    <button class="btn-secondary edit-btn">Editar</button>
-                    <button class="btn-danger delete-btn">Borrar</button>
+                    <button class="btn btn-secondary text-sm !px-3 !py-1 edit-btn">Editar</button>
+                    <button class="btn btn-danger text-sm !px-3 !py-1 delete-btn">Borrar</button>
                 </div>
             `;
             adminAppList.appendChild(item);
         }
         
-        // Clics en lista de admin (Editar/Borrar) (Sin cambios)
+        // Clics en lista de admin (Editar/Borrar)
         adminAppList.addEventListener("click", (e) => {
             const target = e.target;
             const item = target.closest(".admin-list-item");
@@ -677,13 +761,12 @@
             }
             
             if (target.classList.contains("delete-btn")) {
-                if (true) { // Reemplazado confirm()
-                    deleteApp(appId);
-                }
+                // No usamos confirm()
+                deleteApp(appId);
             }
         });
         
-        // Borrar App (Sin cambios)
+        // Borrar App
         async function deleteApp(id) {
             try {
                 const appRef = doc(db, "apps", id);
@@ -695,7 +778,7 @@
             }
         }
         
-        // Resetear Formulario (Sin cambios)
+        // Resetear Formulario
         adminFormCancelBtn.addEventListener("click", resetAdminForm);
         function resetAdminForm() {
             adminForm.reset();
@@ -704,47 +787,180 @@
             adminFormCancelBtn.style.display = "none";
         }
 
-        // --- CAMBIO AQUÍ (Nuevas funciones para SortableJS) ---
+        // --- LÓGICA DE SORTABLEJS ---
         
-        /**
-         * Inicializa SortableJS en la galería
-         */
         function initSortable() {
             console.log("Activando modo de ordenamiento.");
             sortable = new Sortable(appGallery, {
-                animation: 150, // Animación de reordenamiento
-                ghostClass: 'sortable-ghost', // Clase CSS para el fantasma
-                chosenClass: 'sortable-chosen', // Clase CSS para el item elegido
-                onEnd: saveOrder // Función a llamar cuando se suelta el item
+                animation: 150, 
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                onEnd: saveOrder 
             });
         }
 
-        /**
-         * Se llama cuando el admin suelta una tarjeta.
-         * Guarda el nuevo orden en Firebase usando un 'batch write'.
-         */
         async function saveOrder() {
             console.log("Guardando nuevo orden...");
-            const items = appGallery.children; // Obtiene todas las tarjetas en el nuevo orden del DOM
-            
-            // Un 'batch' nos permite hacer múltiples escrituras como una sola operación
+            const items = appGallery.children;
             const batch = writeBatch(db);
 
             Array.from(items).forEach((item, index) => {
                 const appId = item.getAttribute('data-id');
                 if (appId) {
                     const appRef = doc(db, "apps", appId);
-                    batch.update(appRef, { orden: index }); // Actualiza el campo 'orden' según su nueva posición
+                    batch.update(appRef, { orden: index });
                 }
             });
 
             try {
-                await batch.commit(); // Envía todas las actualizaciones a Firebase
+                await batch.commit(); 
                 console.log("¡Orden guardado exitosamente!");
             } catch (error) {
                 console.error("Error al guardar el orden:", error);
             }
         }
+        
+        // --- CAMBIO AQUÍ (¡EL ARREGLO DEL BUG 'orden'!) ---
+        async function checkAndBackfillData() {
+            isBackfilling = true;
+            console.log("Buscando apps sin el campo 'orden' para migrar...");
+            
+            const allDocsQuery = query(appsCollection);
+            
+            try {
+                const snapshot = await getDocs(allDocsQuery); 
+                
+                const batch = writeBatch(db);
+                let docsToBackfill = 0;
+                
+                // ¡ARREGLO! 'doc' se renombra a 'documentSnapshot' para evitar conflicto
+                snapshot.docs.forEach((documentSnapshot, index) => {
+                    const app = documentSnapshot.data();
+                    if (app.orden === undefined) {
+                        console.warn(`App sin 'orden': ${app.nombre}. Asignando orden: ${index}`);
+                        const appRef = doc(db, "apps", documentSnapshot.id); // <-- Arreglado
+                        batch.update(appRef, { orden: index }); 
+                        docsToBackfill++;
+                    }
+                });
+                
+                if (docsToBackfill > 0) {
+                    console.log(`Actualizando ${docsToBackfill} apps. Por favor espera...`);
+                    await batch.commit(); 
+                    console.log("¡Migración completada! Las apps ahora son visibles.");
+                } else {
+                    console.log("No se necesita migración. Todas las apps están correctas.");
+                }
+                
+            } catch (error) {
+                console.error("Error durante la migración de datos:", error);
+            }
+            
+            isBackfilling = false;
+        }
+        // --- FIN DEL CAMBIO ---
+
+        // --- CAMBIO AQUÍ (LÓGICA DE GEMINI API) ---
+        
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        /**
+         * Realiza un fetch con reintentos exponenciales.
+         */
+        async function fetchWithRetry(url, options, retries = 3, backoff = 1000) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    console.warn(`Intento ${i + 1} fallido: ${response.statusText}`);
+                } catch (error) {
+                    console.warn(`Intento ${i + 1} fallido (error de red): ${error.message}`);
+                }
+                await delay(backoff);
+                backoff *= 2; // Duplica el tiempo de espera
+            }
+            throw new Error("No se pudo obtener respuesta de la API después de varios intentos.");
+        }
+
+        /**
+         * Llama a la API de Gemini para generar o mejorar texto.
+         */
+        async function callGeminiAPI(userQuery) {
+            const apiKey = ""; // Dejar vacío, se inyecta en el entorno.
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: {
+                    parts: [{ text: "Eres un asistente de marketing experto. Genera texto conciso, profesional y atractivo." }]
+                },
+            };
+
+            const options = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            };
+
+            const result = await fetchWithRetry(apiUrl, options);
+            
+            const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!text) {
+                throw new Error("La respuesta de la API no contiene texto válido.");
+            }
+            
+            // Limpia el texto (a veces Gemini añade "markdown" o comillas)
+            return text.replace(/```json|```/g, "").trim().replace(/^"|"$/g, '');
+        }
+
+        /**
+         * Event Listener para el botón de Gemini ✨
+         */
+        geminiEnhanceBtn.addEventListener("click", async () => {
+            const appName = appNombreInput.value;
+            const appDesc = appDescInput.value;
+
+            if (!appName) {
+                geminiLoading.textContent = "Por favor, escribe un nombre primero.";
+                geminiLoading.style.color = "#F87171"; // Rojo
+                geminiLoading.style.display = "inline";
+                await delay(2000);
+                geminiLoading.style.display = "none";
+                geminiLoading.style.color = "#9CA3AF"; // Gris
+                return;
+            }
+
+            // Mostrar estado de carga
+            geminiLoading.textContent = "Generando...";
+            geminiLoading.style.display = "inline";
+            geminiEnhanceBtn.disabled = true;
+
+            let prompt;
+            if (appDesc) {
+                // Si hay descripción, mejorarla
+                prompt = `Mejora esta descripción para una app llamada "${appName}". Hazla sonar más profesional y atractiva, pero mantenla corta (máximo 25 palabras). Descripción original: "${appDesc}"`;
+            } else {
+                // Si no hay descripción, generarla
+                prompt = `Genera una descripción breve (máximo 20 palabras) y profesional para una aplicación web llamada "${appName}".`;
+            }
+
+            try {
+                const newDesc = await callGeminiAPI(prompt);
+                appDescInput.value = newDesc; // Actualiza el textarea
+            } catch (error) {
+                console.error("Error al llamar a Gemini API:", error);
+                geminiLoading.textContent = "Error de API";
+                geminiLoading.style.color = "#F87171"; // Rojo
+                await delay(2000);
+            }
+
+            // Ocultar estado de carga
+            geminiLoading.style.display = "none";
+            geminiLoading.style.color = "#9CA3AF"; // Gris
+            geminiEnhanceBtn.disabled = false;
+        });
         // --- FIN DEL CAMBIO ---
 
     </script>
