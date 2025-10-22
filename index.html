@@ -45,14 +45,18 @@
             transform: scale(1.05);
             background: rgba(255, 255, 255, 0.15);
         }
+        
+        /* --- CAMBIO AQUÍ --- */
         .app-card img {
-             width: 6rem; /* 96px */
-             height: 6rem; /* 96px */
-             border-radius: 0.75rem; /* rounded-xl */
-             margin-bottom: 1rem;
+             width: 8rem; /* 128px (antes 6rem) */
+             height: 8rem; /* 128px (antes 6rem) */
+             border-radius: 1rem; /* (antes 0.75rem) */
+             margin-bottom: 1.5rem; /* (antes 1rem) */
              object-fit: cover;
              background-color: rgba(255, 255, 255, 0.2);
         }
+        /* --- FIN DEL CAMBIO --- */
+        
         .app-card-nombre {
             font-size: 1.125rem; /* text-lg */
             font-weight: 600; /* semibold */
@@ -244,9 +248,17 @@
 
         <!-- Título Principal (Botón de Login) -->
         <div class="text-center mb-12">
-            <h1 id="login-trigger" class="titulo-principal text-6xl md:text-7xl text-white">
+            
+            <!-- --- CAMBIO AQUÍ --- -->
+            <h1 id="login-trigger" class="titulo-principal text-4xl md:text-5xl text-white">
                 CORNING APPS
             </h1>
+            <!-- Texto "Powered by" agregado -->
+            <p class="text-sm text-white opacity-30 font-light tracking-wide mt-2">
+                Powered By Ulises Luna
+            </p>
+            <!-- --- FIN DEL CAMBIO --- -->
+            
         </div>
         
         <!-- Galería de Aplicaciones -->
@@ -512,7 +524,9 @@
         // R (Read) - Cargar apps en tiempo real
         onSnapshot(appsCollection, (snapshot) => {
             if (snapshot.empty) {
+                appGallery.innerHTML = ""; // Limpia la galería
                 loadingAppsMsg.textContent = "No hay aplicaciones para mostrar.";
+                loadingAppsMsg.style.display = "block";
                 return;
             }
             
@@ -541,13 +555,17 @@
             card.className = "app-card";
             card.setAttribute("data-id", id);
             
+            // --- CAMBIO AQUÍ ---
+            // Se actualizó el tamaño del placeholder a 128x128
             card.innerHTML = `
                 <img src="${app.icono}" 
                      alt="Icono de ${app.nombre}"
-                     onerror="this.src='https://placehold.co/96x96/FFFFFF/333333?text=${app.nombre.charAt(0)}'">
+                     onerror="this.src='https://placehold.co/128x128/FFFFFF/333333?text=${app.nombre.charAt(0)}'">
                 <span class="app-card-nombre">${app.nombre}</span>
                 <span class="app-card-desc">${app.descripcion}</span>
             `;
+            // --- FIN DEL CAMBIO ---
+            
             appGallery.appendChild(card);
         }
 
@@ -633,4 +651,3 @@
     </script>
 </body>
 </html>
-
