@@ -50,9 +50,8 @@
             padding: 1.5rem;
             border-radius: 1rem;
             height: 100%;
-            opacity: 0; /* Oculto al inicio para la animación */
-            /* --- CAMBIO AQUÍ (Modal de Detalles) --- */
-            cursor: pointer; /* Ahora es un div clickeable */
+            opacity: 0; 
+            cursor: pointer; 
         }
         .app-card:hover {
             transform: scale(1.05);
@@ -65,15 +64,14 @@
              border-radius: 1.25rem;
              margin-bottom: 1.5rem;
              object-fit: cover;
-             background-color: rgba(255, 255, 255, 0.2);
-             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-             /* --- CAMBIO AQUÍ (Modal de Detalles) --- */
-             pointer-events: none; /* Evita que la imagen "robe" el clic de la tarjeta */
+             background-color: rgba(255, 255, 0.2);
+             /* --- CAMBIO AQUÍ (Eliminamos el 'transform' del CSS) --- */
+             transition: transform 0.3s ease-in-out; 
+             pointer-events: none; 
         }
         
-        .app-card:hover img {
-            transform: scale(1.05) rotate(10deg);
-        }
+        /* --- CAMBIO AQUÍ (Efecto de giro ELIMINADO de :hover) --- */
+        /* Ya no hay .app-card:hover img { ... } */
         
         .app-card-nombre {
             font-size: 1.125rem; /* text-lg */
@@ -87,6 +85,13 @@
             color: #D1D5DB; /* gray-300 */
             flex-grow: 1; 
             pointer-events: none;
+            
+            /* Para descripciones cortas */
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Animación de entrada */
@@ -143,6 +148,11 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
             position: relative;
         }
+        /* Aumentamos el ancho máximo para el modal de detalles */
+        #details-modal .modal-content {
+             max-width: 600px; 
+        }
+        
         .modal-close {
             color: #aaa;
             position: absolute;
@@ -159,14 +169,14 @@
             text-decoration: none;
         }
         
-        /* --- CAMBIO AQUÍ (Estilos para Modal de Detalles) --- */
+        /* Estilos para Modal de Detalles */
         #details-modal .modal-content {
-            padding: 0; /* Sin padding para que la imagen llene la parte superior */
-            overflow: hidden; /* Para los bordes redondeados de la imagen */
+            padding: 0; 
+            overflow: hidden; 
         }
         #details-icono {
             width: 100%;
-            height: 200px;
+            height: 250px; /* Un poco más grande */
             object-fit: cover;
             background-color: rgba(255, 255, 255, 0.1);
         }
@@ -184,8 +194,37 @@
             color: #D1D5DB;
             margin-bottom: 1.5rem;
         }
+        
+        /* --- CAMBIO AQUÍ (Estilos para Galería de Capturas) --- */
+        #details-screenshots-container {
+            display: none; /* Oculto si no hay capturas */
+            padding: 0 2rem 2rem 2rem; /* Padding solo horizontal y abajo */
+        }
+        #details-screenshots-container h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        .screenshots-gallery {
+            display: flex;
+            overflow-x: auto; /* Permite scroll horizontal */
+            gap: 1rem;
+            padding-bottom: 1rem; /* Espacio para la barra de scroll */
+            /* Efecto de scroll 'snap' */
+            scroll-snap-type: x mandatory;
+        }
+        .screenshots-gallery img {
+            width: 80%; /* Ocupa el 80% del modal */
+            height: auto;
+            flex-shrink: 0; /* Evita que se encojan */
+            border-radius: 0.5rem;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            scroll-snap-align: center; /* Centra la imagen al scrollear */
+        }
         /* --- FIN DEL CAMBIO --- */
-
+        
         /* Formularios y Botones */
         .form-input {
             width: 100%;
@@ -294,7 +333,7 @@
             display: none; 
         }
 
-        /* --- CAMBIO AQUÍ (Botón Gemini) --- */
+        /* Botón Gemini */
         .gemini-btn {
             background: none;
             border: none;
@@ -314,7 +353,6 @@
             cursor: not-allowed;
             transform: none;
         }
-        /* --- FIN DEL CAMBIO --- */
     </style>
 </head>
 <body class="min-h-screen">
@@ -379,25 +417,29 @@
                     <input type="text" id="app-nombre" class="form-input" required>
                 </div>
                 <div>
-                    <label for="app-icono" class="form-label">Nombre del Ícono (ej. icono.png)</label>
-                    <input type="text" id="app-icono" class="form-input" placeholder="ej: cro.png" required>
+                    <label for="app-icono" class="form-label">URL del Ícono</label>
+                    <input type="text" id="app-icono" class="form-input" placeholder="https://.../icono.png" required>
                 </div>
                 <div>
-                    <!-- --- CAMBIO AQUÍ (Label con Botón Gemini) --- -->
                     <div class="flex justify-between items-center mb-1">
                         <label for="app-desc" class="form-label">Descripción Breve</label>
                         <button type="button" id="gemini-enhance-btn" class="gemini-btn" title="Generar/Mejorar con IA">✨</button>
                     </div>
-                    <!-- --- FIN DEL CAMBIO --- -->
                     <textarea id="app-desc" class="form-input" rows="2"></textarea>
-                    <!-- --- CAMBIO AQUÍ (Loading Spinner) --- -->
                     <span id="gemini-loading" class="text-sm text-gray-400 mt-1" style="display: none;">Generando...</span>
-                    <!-- --- FIN DEL CAMBIO --- -->
                 </div>
                 <div>
                     <label for="app-link" class="form-label">Enlace (URL)</label>
                     <input type="url" id="app-link" class="form-input" placeholder="https://..." required>
                 </div>
+                
+                <!-- --- CAMBIO AQUÍ (Nuevo campo para Capturas) --- -->
+                <div>
+                    <label for="app-screenshots" class="form-label">Capturas (URLs separadas por coma)</label>
+                    <input type="text" id="app-screenshots" class="form-input" placeholder="https://.../img1.png, https://.../img2.png">
+                </div>
+                <!-- --- FIN DEL CAMBIO --- -->
+
                 <button type="submit" id="admin-form-submit" class="btn btn-primary !mt-6">Guardar App</button>
                 <button type="button" id="admin-form-cancel" class="btn btn-secondary w-full" style="display: none;">Cancelar Edición</button>
             </form>
@@ -413,7 +455,7 @@
         </div>
     </div>
     
-    <!-- --- CAMBIO AQUÍ (Nuevo Modal de Detalles) --- -->
+    <!-- Modal de Detalles -->
     <div id="details-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close" id="details-close">&times;</span>
@@ -421,7 +463,7 @@
             <!-- Icono -->
             <img id="details-icono" src="" alt="Icono de la App">
             
-            <!-- Contenido -->
+            <!-- Contenido Principal -->
             <div id="details-contenido">
                 <h2 id="details-nombre" class="text-3xl font-bold mb-2 text-white">Nombre de la App</h2>
                 <p id="details-desc" class="text-lg text-gray-300 mb-6">Descripción completa de la aplicación...</p>
@@ -430,9 +472,17 @@
                     Ir a la Aplicación
                 </a>
             </div>
+            
+            <!-- --- CAMBIO AQUÍ (Galería de Capturas) --- -->
+            <div id="details-screenshots-container">
+                <h3>Capturas de Pantalla</h3>
+                <div id="details-screenshots-gallery" class="screenshots-gallery">
+                    <!-- Las imágenes se insertarán aquí con JS -->
+                </div>
+            </div>
+            <!-- --- FIN DEL CAMBIO --- -->
         </div>
     </div>
-    <!-- --- FIN DEL CAMBIO --- -->
     
     <!-- Scripts de Firebase -->
     <script type="module">
@@ -481,14 +531,14 @@
         // --- REFERENCIAS AL DOM ---
         const loginModal = document.getElementById("login-modal");
         const adminModal = document.getElementById("admin-modal");
-        const detailsModal = document.getElementById("details-modal"); // <-- Nuevo
+        const detailsModal = document.getElementById("details-modal"); 
         
         const loginTrigger = document.getElementById("login-trigger");
         const adminGear = document.getElementById("admin-gear");
         
         const loginCloseBtn = document.getElementById("login-close");
         const adminCloseBtn = document.getElementById("admin-close");
-        const detailsCloseBtn = document.getElementById("details-close"); // <-- Nuevo
+        const detailsCloseBtn = document.getElementById("details-close"); 
         
         const loginForm = document.getElementById("login-form");
         const adminForm = document.getElementById("admin-form");
@@ -498,6 +548,7 @@
         const appIconoInput = document.getElementById("app-icono");
         const appDescInput = document.getElementById("app-desc");
         const appLinkInput = document.getElementById("app-link");
+        const appScreenshotsInput = document.getElementById("app-screenshots"); // <-- Nuevo
         const adminFormSubmitBtn = document.getElementById("admin-form-submit");
         const adminFormCancelBtn = document.getElementById("admin-form-cancel");
         
@@ -508,15 +559,13 @@
         const logoutButton = document.getElementById("logout-button");
         const loginErrorMsg = document.getElementById("login-error");
 
-        // --- CAMBIO AQUÍ (DOM Refs para Gemini) ---
         const geminiEnhanceBtn = document.getElementById("gemini-enhance-btn");
         const geminiLoading = document.getElementById("gemini-loading");
-        // --- FIN DEL CAMBIO ---
 
         // Variables para Sortable y Conteo
         let sortable = null;
         let currentAppCount = 0; 
-        let isBackfilling = false; // Para el bug de 'orden'
+        let isBackfilling = false; 
 
         // --- LÓGICA DE MODALES ---
         function openModal(modal) { modal.style.display = "flex"; }
@@ -527,62 +576,77 @@
         
         loginCloseBtn.addEventListener("click", () => closeModal(loginModal));
         adminCloseBtn.addEventListener("click", () => closeModal(adminModal));
-        detailsCloseBtn.addEventListener("click", () => closeModal(detailsModal)); // <-- Nuevo
+        detailsCloseBtn.addEventListener("click", () => closeModal(detailsModal)); 
         
         window.addEventListener("click", (event) => {
             if (event.target == loginModal) closeModal(loginModal);
             if (event.target == adminModal) closeModal(adminModal);
-            if (event.target == detailsModal) closeModal(detailsModal); // <-- Nuevo
+            if (event.target == detailsModal) closeModal(detailsModal); 
         });
         
-        // --- CAMBIO AQUÍ (Abrir modal de detalles) ---
+        // Abrir modal de detalles
         appGallery.addEventListener("click", (e) => {
             const card = e.target.closest(".app-card");
             
-            // Si no estamos en modo admin, o si estamos en modo admin pero NO estamos arrastrando
             if (card && !card.classList.contains("sortable-chosen")) {
                 e.preventDefault();
                 
                 // Rellenar el modal con los datos de la tarjeta
                 document.getElementById("details-icono").src = card.dataset.icono;
                 document.getElementById("details-icono").onerror = () => {
-                     document.getElementById("details-icono").src = `https://placehold.co/400x200/FFFFFF/333333?text=${card.dataset.nombre}`
+                     document.getElementById("details-icono").src = `https://placehold.co/600x250/FFFFFF/333333?text=${card.dataset.nombre}`
                 };
                 document.getElementById("details-nombre").textContent = card.dataset.nombre;
                 document.getElementById("details-desc").textContent = card.dataset.desc;
                 document.getElementById("details-link").href = card.dataset.link;
                 
+                // --- CAMBIO AQUÍ (Lógica de Galería de Capturas) ---
+                const screenshotsContainer = document.getElementById("details-screenshots-container");
+                const gallery = document.getElementById("details-screenshots-gallery");
+                gallery.innerHTML = ""; // Limpiar galería
+                
+                const screenshots = JSON.parse(card.dataset.screenshots || '[]');
+                
+                if (screenshots.length > 0) {
+                    screenshots.forEach(src => {
+                        if(src) { // Evitar strings vacíos
+                            const img = document.createElement("img");
+                            img.src = src;
+                            img.alt = `Captura de ${card.dataset.nombre}`;
+                            img.onerror = () => {
+                                img.src = `https://placehold.co/400x200/FFFFFF/333333?text=Error`
+                            };
+                            gallery.appendChild(img);
+                        }
+                    });
+                    screenshotsContainer.style.display = "block"; // Mostrar contenedor
+                } else {
+                    screenshotsContainer.style.display = "none"; // Ocultar si no hay capturas
+                }
+                // --- FIN DEL CAMBIO ---
+
                 openModal(detailsModal);
             }
         });
-        // --- FIN DEL CAMBIO ---
 
         // --- LÓGICA DE AUTENTICACIÓN ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Usuario logueado
-                console.log("Usuario autenticado:", user.email);
                 adminGear.style.display = "block";
                 closeModal(loginModal); 
                 loginForm.reset(); 
                 loginErrorMsg.style.display = "none";
 
-                // --- CAMBIO AQUÍ (Arreglo del Bug + Activar Drag-and-Drop) ---
                 if (!isBackfilling) {
-                    checkAndBackfillData(); // ¡Aquí está el arreglo!
+                    checkAndBackfillData(); 
                 }
                 appGallery.classList.add("admin-sortable"); 
                 if (!sortable) {
                     initSortable();
                 }
-                // --- FIN DEL CAMBIO ---
-
             } else {
-                // Usuario deslogueado
-                console.log("Usuario no autenticado.");
                 adminGear.style.display = "none"; 
                 closeModal(adminModal); 
-
                 appGallery.classList.remove("admin-sortable");
                 if (sortable) {
                     sortable.destroy();
@@ -618,11 +682,18 @@
 
         // --- LÓGICA DE FIRESTORE ---
 
-        // C (Create) y U (Update) (Asigna 'orden' al crear)
+        // C (Create) y U (Update) 
         adminForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             
             const appId = editIdInput.value;
+            // --- CAMBIO AQUÍ (Procesar screenshots) ---
+            const screenshotsArray = appScreenshotsInput.value
+                .split(',')
+                .map(s => s.trim())
+                .filter(s => s); // Elimina strings vacíos
+            // --- FIN DEL CAMBIO ---
+
             let appData;
 
             if (appId) {
@@ -632,6 +703,7 @@
                     icono: appIconoInput.value,
                     descripcion: appDescInput.value,
                     link: appLinkInput.value,
+                    screenshots: screenshotsArray // <-- Nuevo
                 };
             } else {
                 // Creando
@@ -641,7 +713,8 @@
                     descripcion: appDescInput.value,
                     link: appLinkInput.value,
                     creadoEn: serverTimestamp(),
-                    orden: currentAppCount // Asigna el siguiente número de orden
+                    orden: currentAppCount,
+                    screenshots: screenshotsArray // <-- Nuevo
                 };
             }
             
@@ -661,10 +734,10 @@
         });
 
         // R (Read) - Cargar apps en tiempo real, ORDENADAS
-        const q = query(appsCollection, orderBy("orden")); // ¡REQUIERE ÍNDICE!
+        const q = query(appsCollection, orderBy("orden")); 
         
         onSnapshot(q, (snapshot) => {
-            currentAppCount = snapshot.size; // Actualiza el conteo global
+            currentAppCount = snapshot.size; 
             
             if (snapshot.empty && !isBackfilling) {
                 appGallery.innerHTML = ""; 
@@ -695,19 +768,20 @@
             loadingAppsMsg.style.display = "block";
         });
 
-        // --- CAMBIO AQUÍ (La tarjeta ahora es un DIV con data-*) ---
+        // Renderizar Card (con data-screenshots)
         function renderAppCard(app, id, index) { 
-            const card = document.createElement("div"); // <-- YA NO ES 'a'
+            const card = document.createElement("div"); 
             card.className = "app-card";
             card.setAttribute("data-id", id);
             
-            // Guardamos los datos para el modal de detalles
             card.setAttribute("data-nombre", app.nombre);
             card.setAttribute("data-icono", app.icono);
             card.setAttribute("data-desc", app.descripcion);
             card.setAttribute("data-link", app.link);
+            // --- CAMBIO AQUÍ (Guardar screenshots en la tarjeta) ---
+            card.setAttribute("data-screenshots", JSON.stringify(app.screenshots || []));
+            // --- FIN DEL CAMBIO ---
             
-            // Animación de entrada
             card.classList.add("card-fade-in");
             card.style.animationDelay = `${index * 80}ms`;
             
@@ -720,9 +794,8 @@
             `;
             appGallery.appendChild(card);
         }
-        // --- FIN DEL CAMBIO ---
 
-        // Renderizar item en lista de admin
+        // Renderizar item en lista de admin (con data-screenshots)
         function renderAdminListItem(app, id) {
             const item = document.createElement("div");
             item.className = "admin-list-item";
@@ -731,6 +804,9 @@
             item.setAttribute("data-icono", app.icono);
             item.setAttribute("data-desc", app.descripcion);
             item.setAttribute("data-link", app.link);
+            // --- CAMBIO AQUÍ (Guardar screenshots en el item) ---
+            item.setAttribute("data-screenshots", JSON.stringify(app.screenshots || []));
+            // --- FIN DEL CAMBIO ---
             
             item.innerHTML = `
                 <span>${app.nombre}</span>
@@ -755,13 +831,17 @@
                 appIconoInput.value = item.getAttribute("data-icono");
                 appDescInput.value = item.getAttribute("data-desc");
                 appLinkInput.value = item.getAttribute("data-link");
+                // --- CAMBIO AQUÍ (Rellenar campo de screenshots) ---
+                const screenshots = JSON.parse(item.getAttribute("data-screenshots") || '[]');
+                appScreenshotsInput.value = screenshots.join(', '); // Unimos con coma y espacio
+                // --- FIN DEL CAMBIO ---
+                
                 adminFormSubmitBtn.textContent = "Actualizar App";
                 adminFormCancelBtn.style.display = "block";
                 adminForm.scrollIntoView({ behavior: 'smooth' });
             }
             
             if (target.classList.contains("delete-btn")) {
-                // No usamos confirm()
                 deleteApp(appId);
             }
         });
@@ -820,7 +900,7 @@
             }
         }
         
-        // --- CAMBIO AQUÍ (¡EL ARREGLO DEL BUG 'orden'!) ---
+        // Script de migración (Arreglo bug 'orden')
         async function checkAndBackfillData() {
             isBackfilling = true;
             console.log("Buscando apps sin el campo 'orden' para migrar...");
@@ -833,12 +913,11 @@
                 const batch = writeBatch(db);
                 let docsToBackfill = 0;
                 
-                // ¡ARREGLO! 'doc' se renombra a 'documentSnapshot' para evitar conflicto
                 snapshot.docs.forEach((documentSnapshot, index) => {
                     const app = documentSnapshot.data();
                     if (app.orden === undefined) {
                         console.warn(`App sin 'orden': ${app.nombre}. Asignando orden: ${index}`);
-                        const appRef = doc(db, "apps", documentSnapshot.id); // <-- Arreglado
+                        const appRef = doc(db, "apps", documentSnapshot.id); 
                         batch.update(appRef, { orden: index }); 
                         docsToBackfill++;
                     }
@@ -858,15 +937,11 @@
             
             isBackfilling = false;
         }
-        // --- FIN DEL CAMBIO ---
-
-        // --- CAMBIO AQUÍ (LÓGICA DE GEMINI API) ---
+        
+        // --- LÓGICA DE GEMINI API ---
         
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-        /**
-         * Realiza un fetch con reintentos exponenciales.
-         */
         async function fetchWithRetry(url, options, retries = 3, backoff = 1000) {
             for (let i = 0; i < retries; i++) {
                 try {
@@ -879,22 +954,19 @@
                     console.warn(`Intento ${i + 1} fallido (error de red): ${error.message}`);
                 }
                 await delay(backoff);
-                backoff *= 2; // Duplica el tiempo de espera
+                backoff *= 2; 
             }
             throw new Error("No se pudo obtener respuesta de la API después de varios intentos.");
         }
 
-        /**
-         * Llama a la API de Gemini para generar o mejorar texto.
-         */
         async function callGeminiAPI(userQuery) {
-            const apiKey = ""; // Dejar vacío, se inyecta en el entorno.
+            const apiKey = ""; 
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
             const payload = {
                 contents: [{ parts: [{ text: userQuery }] }],
                 systemInstruction: {
-                    parts: [{ text: "Eres un asistente de marketing experto. Genera texto conciso, profesional y atractivo." }]
+                    parts: [{ text: "Eres un asistente de marketing experto. Genera texto conciso, profesional y atractivo en español." }]
                 },
             };
 
@@ -904,20 +976,30 @@
                 body: JSON.stringify(payload)
             };
 
-            const result = await fetchWithRetry(apiUrl, options);
-            
+            let result; // Declaramos fuera para poder loguearlo en el catch
+            try {
+                result = await fetchWithRetry(apiUrl, options);
+            } catch (fetchError) {
+                console.error("Error en fetchWithRetry:", fetchError);
+                throw new Error("Error de red al contactar la API de Gemini.");
+            }
+
+            // --- CAMBIO AQUÍ (Mejora en el log de error) ---
+            // Logueamos la respuesta completa SIEMPRE para depurar
+            console.log("Respuesta completa de Gemini API:", JSON.stringify(result, null, 2));
+
             const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+            
             if (!text) {
+                // Si 'text' no existe, es el "Error de API"
+                console.error("La respuesta de la API no contenía 'candidates' o 'text'. Revisa la respuesta de arriba. Puede ser un error de API Key, facturación, o la API no está habilitada.", result);
                 throw new Error("La respuesta de la API no contiene texto válido.");
             }
+            // --- FIN DEL CAMBIO ---
             
-            // Limpia el texto (a veces Gemini añade "markdown" o comillas)
             return text.replace(/```json|```/g, "").trim().replace(/^"|"$/g, '');
         }
 
-        /**
-         * Event Listener para el botón de Gemini ✨
-         */
         geminiEnhanceBtn.addEventListener("click", async () => {
             const appName = appNombreInput.value;
             const appDesc = appDescInput.value;
@@ -932,23 +1014,20 @@
                 return;
             }
 
-            // Mostrar estado de carga
             geminiLoading.textContent = "Generando...";
             geminiLoading.style.display = "inline";
             geminiEnhanceBtn.disabled = true;
 
             let prompt;
             if (appDesc) {
-                // Si hay descripción, mejorarla
                 prompt = `Mejora esta descripción para una app llamada "${appName}". Hazla sonar más profesional y atractiva, pero mantenla corta (máximo 25 palabras). Descripción original: "${appDesc}"`;
             } else {
-                // Si no hay descripción, generarla
                 prompt = `Genera una descripción breve (máximo 20 palabras) y profesional para una aplicación web llamada "${appName}".`;
             }
 
             try {
                 const newDesc = await callGeminiAPI(prompt);
-                appDescInput.value = newDesc; // Actualiza el textarea
+                appDescInput.value = newDesc; 
             } catch (error) {
                 console.error("Error al llamar a Gemini API:", error);
                 geminiLoading.textContent = "Error de API";
@@ -956,12 +1035,10 @@
                 await delay(2000);
             }
 
-            // Ocultar estado de carga
             geminiLoading.style.display = "none";
             geminiLoading.style.color = "#9CA3AF"; // Gris
             geminiEnhanceBtn.disabled = false;
         });
-        // --- FIN DEL CAMBIO ---
 
     </script>
 </body>
