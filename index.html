@@ -166,6 +166,27 @@
             text-decoration: none;
         }
         
+        /* --- CAMBIO AQUÍ (Nuevo Modal Lightbox) --- */
+        #image-modal {
+            z-index: 2000; /* Por encima del modal de detalles */
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+        }
+        #lightbox-close {
+            top: 1.5rem;
+            right: 2.5rem;
+            font-size: 40px;
+        }
+        #lightbox-image {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+        /* --- FIN DEL CAMBIO --- */
+        
+        
         /* Estilos para Modal de Detalles */
         #details-icono {
             width: 12rem; /* 192px */
@@ -179,13 +200,13 @@
         
         #details-contenido {
             padding: 2rem;
-            padding-top: 1rem; /* Reducimos padding superior */
+            padding-top: 1rem; 
             text-align: center; 
         }
         .details-icono-wrapper {
             display: flex;
             justify-content: center;
-            padding-top: 1rem; /* Añadimos padding aquí */
+            padding-top: 1rem; 
         }
         
         #details-nombre {
@@ -195,23 +216,19 @@
             margin-bottom: 0.5rem;
         }
         
-        /* --- CAMBIO AQUÍ (Descripción Acomodada) --- */
         #details-desc {
             font-size: 1rem;
             color: #D1D5DB;
             margin-bottom: 1.5rem;
-            line-height: 1.625; /* <-- MÁS ESPACIADO (leading-relaxed) */
+            line-height: 1.625; 
         }
-        /* --- FIN DEL CAMBIO --- */
         
-        /* --- CAMBIO AQUÍ (Texto de ayuda PWA) --- */
         #details-pwa-info {
             font-size: 0.875rem; /* text-sm */
             color: #9CA3AF; /* gray-400 */
             margin-top: 0.75rem; /* mt-3 */
             display: none; /* Oculto por defecto */
         }
-        /* --- FIN DEL CAMBIO --- */
 
         
         /* Estilos para Galería de Capturas */
@@ -243,7 +260,14 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             scroll-snap-align: center; 
             background-color: rgba(0, 0, 0, 0.2); 
+            /* --- CAMBIO AQUÍ (Cursor Zoom-in) --- */
+            cursor: zoom-in;
+            transition: opacity 0.2s;
         }
+        .screenshots-gallery img:hover {
+            opacity: 0.8;
+        }
+        /* --- FIN DEL CAMBIO --- */
         
         /* Estilo para Checkbox PWA */
         .form-checkbox {
@@ -521,11 +545,9 @@
                     <span id="details-link-text">Ir a la Aplicación</span>
                 </a>
                 
-                <!-- --- CAMBIO AQUÍ (Texto de ayuda PWA) --- -->
                 <p id="details-pwa-info">
                     Serás redirigido. Busca el ícono [ + ] en tu navegador para instalarla.
                 </p>
-                <!-- --- FIN DEL CAMBIO --- -->
             </div>
             
             <!-- Galería de Capturas -->
@@ -537,6 +559,14 @@
             </div>
         </div>
     </div>
+    
+    <!-- --- CAMBIO AQUÍ (Nuevo Modal Lightbox) --- -->
+    <div id="image-modal" class="modal">
+        <span class="modal-close" id="lightbox-close">&times;</span>
+        <img id="lightbox-image" src="" alt="Captura de pantalla ampliada">
+    </div>
+    <!-- --- FIN DEL CAMBIO --- -->
+    
     
     <!-- Scripts de Firebase -->
     <script type="module">
@@ -586,6 +616,7 @@
         const loginModal = document.getElementById("login-modal");
         const adminModal = document.getElementById("admin-modal");
         const detailsModal = document.getElementById("details-modal"); 
+        const imageModal = document.getElementById("image-modal"); // <-- Nuevo
         
         const loginTrigger = document.getElementById("login-trigger");
         const adminGear = document.getElementById("admin-gear");
@@ -593,6 +624,7 @@
         const loginCloseBtn = document.getElementById("login-close");
         const adminCloseBtn = document.getElementById("admin-close");
         const detailsCloseBtn = document.getElementById("details-close"); 
+        const lightboxCloseBtn = document.getElementById("lightbox-close"); // <-- Nuevo
         
         const loginForm = document.getElementById("login-form");
         const adminForm = document.getElementById("admin-form");
@@ -616,6 +648,9 @@
 
         const geminiEnhanceBtn = document.getElementById("gemini-enhance-btn");
         const geminiLoading = document.getElementById("gemini-loading");
+        
+        const detailsScreenshotsGallery = document.getElementById("details-screenshots-gallery"); // <-- Nuevo
+        const lightboxImage = document.getElementById("lightbox-image"); // <-- Nuevo
 
         // Variables para Sortable y Conteo
         let sortable = null;
@@ -632,11 +667,13 @@
         loginCloseBtn.addEventListener("click", () => closeModal(loginModal));
         adminCloseBtn.addEventListener("click", () => closeModal(adminModal));
         detailsCloseBtn.addEventListener("click", () => closeModal(detailsModal)); 
+        lightboxCloseBtn.addEventListener("click", () => closeModal(imageModal)); // <-- Nuevo
         
         window.addEventListener("click", (event) => {
             if (event.target == loginModal) closeModal(loginModal);
             if (event.target == adminModal) closeModal(adminModal);
             if (event.target == detailsModal) closeModal(detailsModal); 
+            if (event.target == imageModal) closeModal(imageModal); // <-- Nuevo
         });
         
         // Abrir modal de detalles
@@ -656,7 +693,7 @@
                 const isPWA = card.dataset.ispwa === 'true';
                 const button = document.getElementById("details-link");
                 const buttonText = document.getElementById("details-link-text");
-                const pwaInfo = document.getElementById("details-pwa-info"); // <-- Nuevo
+                const pwaInfo = document.getElementById("details-pwa-info"); 
                 const oldIcon = button.querySelector('svg');
                 if (oldIcon) oldIcon.remove(); 
 
@@ -664,7 +701,7 @@
 
                 if (isPWA) {
                     buttonText.textContent = "Instalar Aplicación";
-                    pwaInfo.style.display = "block"; // <-- Nuevo: Mostrar texto PWA
+                    pwaInfo.style.display = "block"; 
                     button.insertAdjacentHTML('afterbegin', `
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -672,7 +709,7 @@
                     `);
                 } else {
                     buttonText.textContent = "Ir a la Aplicación";
-                    pwaInfo.style.display = "none"; // <-- Nuevo: Ocultar texto PWA
+                    pwaInfo.style.display = "none"; 
                     button.insertAdjacentHTML('afterbegin', `
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
@@ -681,7 +718,7 @@
                 }
                 
                 const screenshotsContainer = document.getElementById("details-screenshots-container");
-                const gallery = document.getElementById("details-screenshots-gallery");
+                const gallery = detailsScreenshotsGallery; // <-- Usamos la referencia
                 gallery.innerHTML = ""; 
                 
                 const screenshots = JSON.parse(card.dataset.screenshots || '[]');
@@ -706,6 +743,18 @@
                 openModal(detailsModal);
             }
         });
+        
+        // --- CAMBIO AQUÍ (Nuevo Event Listener para Lightbox) ---
+        detailsScreenshotsGallery.addEventListener("click", (e) => {
+            if (e.target.tagName === 'IMG') {
+                lightboxImage.src = e.target.src;
+                lightboxImage.onerror = () => {
+                     lightboxImage.src = `https://placehold.co/800x600/FFFFFF/333333?text=Error al cargar imagen`
+                };
+                openModal(imageModal);
+            }
+        });
+        // --- FIN DEL CAMBIO ---
 
         // --- LÓGICA DE AUTENTICACIÓN ---
         onAuthStateChanged(auth, (user) => {
@@ -1040,7 +1089,15 @@
 
 
         async function callGeminiAPI(userQuery) {
-            const apiKey = "AIzaSyDtlj3ppT9WBGMR60SZx0TZmAo3BXQWDX0"; 
+            // !! IMPORTANTE !!
+            // Pega tu API Key de Google Cloud aquí para que la API de Gemini funcione.
+            const apiKey = ""; // <-- PON TU API KEY AQUÍ
+            
+            if (!apiKey) {
+                console.error("API Key de Gemini no encontrada. Por favor, añádela en el script.");
+                throw new Error("API Key no configurada.");
+            }
+            
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
             const payload = {
@@ -1107,6 +1164,9 @@
             } catch (error) {
                 console.error("Error al llamar a Gemini API:", error.message);
                 geminiLoading.textContent = "Error de API";
+                if(error.message.includes("API Key")) {
+                    geminiLoading.textContent = "Falta API Key";
+                }
                 geminiLoading.style.color = "#F87171"; // Rojo
                 await delay(2000);
             }
